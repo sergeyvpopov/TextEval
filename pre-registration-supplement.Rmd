@@ -1,0 +1,141 @@
+---
+title: "Post-pilot Decisions"
+output: html_document
+date: "2026-09-18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Preregistration supplement: "Are LLM Judges Biased By Filenames?"
+
+After pre-registration of the experiment, I noticed that I missed some decisions. I wanted to commit to them by pushing this document to github before data collection starts.
+
+**Supplements:** AsPredicted #312192, registered 18 September 2026
+**Committed:** 18/09/2026, before the first main-study API call
+**Author:** Sergey V. Popov
+
+## Purpose of this file
+
+The AsPredicted registration does not state the final sample size or all exclusion rules. This file fixes those details, and the other decisions listed below, before any main-study data are collected. It does not change the hypotheses, dependent variable, or confirmatory analysis in the registration. Where this file adds a rule that the registration does not mention, the paper will report it as a documented addition.
+
+## 1. Sample size and stopping rule
+
+- The main study uses **150 repetitions per document–label cell per model**. With 4 documents and 5 labels, this is **3,000 calls per model**.
+- Each repetition contains all 20 document–label combinations once, in the order given by the saved schedule (section 6).
+- Data collection for a model stops when all 150 repetitions are complete. No interim analyses of main-study data are carried out, and the number of repetitions does not depend on results.
+- Calls that fail or return invalid replies are handled as described in section 8. They are replaced until I obtain 150 valid replies per cell, or send 200 call attempts per cell.
+
+## 2. Power calculation
+
+The sample size is based on a pilot run on free Ling 3.0 Flash VL (inclusionai/ling-3.0-flash-vl:free), in which each document–label combination was scored 24 or 25 times before OpenRouter's free allowance prevented further pilot calculations. Pilot data are not used in the main analysis.
+
+The number of observations needed per group to compare two labels is
+
+N = 2 × (z₁₋α/₂ + z₁₋β)² × σ² / δ²
+
+with the following inputs:
+
+| Input | Value |
+|---|---|
+| σ (pilot standard deviation of scores within a document–label cell) | 0.536 |
+| δ (smallest effect of interest, points on the 0–10 scale) | 0.1 |
+| α (two-sided) | 0.05 (z = 1.96) |
+| Power | 0.80 (z = 0.84) |
+| Resulting N | 113 per document-label cell |
+
+A difference of 0.1 points is treated as the smallest effect of interest because any differences below are not of economic significance.
+
+The main study uses 150 rather than 112 repetitions to allow a margin for invalid replies and model-specific variance higher than in the pilot.
+
+The calculation assumes a simple two-group comparison. It is conservative for the registered analysis, which removes variation between documents through fixed effects.
+
+## 3. Evaluating models
+
+I intend to use OpenAI ChatGPT 5.6 Sol or Terra, Claude Sonnet 5, and Google Gemini 3.8 flash, with minimal reasoning. The exact used models will be reported; because there is significant time between now and when the project can commence, models can appear or get withdrawn. I leave commitment to specific model to later date, and will commit the decision before collecting data. If a model is updated, withdrawn, or becomes unavailable partway through data collection, data already collected for it are kept and reported descriptively, and the model is excluded from the confirmatory tests.
+
+## 4. API settings
+
+Identical for every call:
+
+- Temperature: provider default
+- Maximum output tokens: 4000
+- System prompt: none 
+- Conversation history: none; every call is independent
+- OpenRouter routing: fallbacks disabled
+
+All three main LLM models are provided by their own vendor.
+
+## 5. Materials
+
+**Prompt** (as in preregistration):
+
+> Evaluate the attached document for quality of writing on a scale from 0 to 10. Use one decimal place. Do not elaborate, just return the number.
+
+**Documents**
+
+| ID | Genre | Length (words) | MD5 |
+|---|---|---|---|
+| Chess | Practical guide for parents on junior chess competitions | 1167 | 05501c5f43a809a198f24b8026635934 |
+| Assignment | Reflective coursework on peer observation of teaching | 2,915 | 7d7496560d09a00acc01b4f54897d4d7 |
+| Book | Expository economics chapter on free markets | 1156 | 3d2969789edf0ee961a002a2f367281e |
+| Cournot | Short technical explanation (Cournot vs Stackelberg) | 340 | 60c109d341e01a9830e6695f00e97b99 |
+
+**Filename labels**
+
+| Condition | File name |
+|---|---|
+| Neutral (reference category) | `Document.md` |
+| Human author | `Document_from_Sergey.md` |
+| AI author, OpenAI | `Document_from_ChatGPT.md` |
+| AI author, Anthropic | `Document_from_Claude.md` |
+| AI author, Google | `Document_from_Gemini.md` |
+
+The human-name label uses my own first name.
+
+## 6. Randomisation
+
+- Schedule file: schedule.csv, generated with random seed 1, committed with this file.
+
+## 7. Dependent variable and parsing rule
+
+As registered: the score is the first number in the model's raw reply. A reply is valid if that number is between 0 and 10 inclusive. Scores are not rounded.
+
+The parsing code is in Main_study.R, committed with this file.
+
+A secondary variable records whether each call produced a valid score (yes/no).
+
+## 8. Exclusion rules
+
+The registration states that invalid replies are excluded from the score analyses and that every valid score is kept, with no outlier removal. The following rules are added here:
+
+1. **Failed calls.** Calls that return an error, time out, or produce an empty reply are re-run once at the end of the schedule. If the re-run fails, the call is recorded as missing.
+2. **Wrong model.** Calls are excluded if the model reported in the API response differs from the model requested (but kept if the model family and version is as requested).
+3. **Wrong text.** Calls are excluded if the document checksum does not match the value in section 5.
+4. **Filename-visibility probe.** Before the main study, each model is asked to report the file name of an attached document. A model that cannot report it correctly is excluded from the confirmatory tests and reported descriptively.
+5. **Recognition probe.** Each model is asked whether it can identify each document or its author. Recognition does not lead to exclusion. If a model identifies a document, its main analyses are repeated without that document, and both results are reported.
+6. **Too many unusable replies.** If more than 20% of a model's main-study calls are invalid or missing after re-runs, its results are reported as exploratory rather than as confirmatory tests.
+
+## 9. Confirmatory analysis
+
+As registered (AsPredicted #312192, question 5). For each evaluating model separately, the score is regressed on indicators for the file-name labels, with the neutral label as reference, and document fixed effects, using HC3 standard errors. The hypotheses are tested as the following contrasts:
+
+- **H1:** average of the three AI labels minus the average of the neutral and human-name labels (all models).
+- **H2:** own-family label minus the average of the two rival labels (OpenAI, Anthropic and Google models).
+- **H3:** average of the two rival labels minus the neutral label (same three models).
+
+All tests are two-sided at α = 0.05. Within each hypothesis, p-values are adjusted across models using the Holm method. Contrasts are reported in points with 95% confidence intervals.
+
+The analysis script is Analysis.R, committed together with this file.
+
+## 10. Exploratory analyses
+
+These were not listed in the registration and, if budget permits, will be reported as exploratory:
+
+- **Inline-header delivery mode.** The same 20 combinations are sent with the document pasted into the message and the file name given in a header line, with 150 repetitions per cell per model and the same randomisation procedure.
+- Human-name versus neutral label.
+- Comparisons between individual labels.
+- Frequency tables of scores by condition.
+- Valid-reply rates by condition (chi-squared test).
+- Within-document permutation tests of each contrast, as a robustness check.

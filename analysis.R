@@ -8,8 +8,13 @@
 #
 # Confirmatory (pre-registered):
 #   score = first number in the reply; OLS on condition indicators with document
-#   fixed effects; HC3 standard errors; H1/H2/H3 as linear contrasts; Holm
-#   adjustment across models within each hypothesis; two-sided alpha = 0.05.
+#   fixed effects; HC3 standard errors; H1-H4 as linear contrasts (H4b = Chen vs
+#   Sergey alone, supplementary); Holm adjustment across models within each
+#   hypothesis; two-sided alpha = 0.05.
+# Power: for every contrast the table also reports the minimum detectable effect
+#   (MDE) at 80% power and the power to detect the registered smallest effect of
+#   interest (0.10 points), both at the Holm-adjusted alpha. These use the
+#   estimated SE; they are NOT "observed power" (which would restate the p-value).
 # Everything else in this file is descriptive or robustness, and is labelled so.
 #
 # Depends: base R only.
@@ -32,7 +37,11 @@ opt <- list(
                   "Document_from_Claude.md" = "Claude",
                   "Document_from_Gemini.md" = "Gemini",
                   "Document_from_Chen.md" = "Chen"),
-  family_label = c(openai = "ChatGPT", anthropic = "Claude", google = "Gemini")
+  family_label = c(openai = "ChatGPT", anthropic = "Claude", google = "Gemini"),
+  # Power / MDE settings (as in the pre-registration, Q7)
+  delta_min = 0.10,                 # smallest effect of interest, in score points
+  power     = 0.80,
+  alpha_mde = 0.05 / 3              # Holm-adjusted alpha for the smallest p across 3 models
 )
 dir.create(opt$out_dir, showWarnings = FALSE)
 
@@ -175,14 +184,25 @@ confirmatory <- function(d) {
   holm <- do.call(rbind, lapply(c("H1", "H2", "H3", "H4", "H4b"), function(h) {
     est <- vapply(tests, \(m) m[h, "estimate"], 0)
     p <- vapply(tests, \(m) m[h, "p"], 0)
+    se <- vapply(tests, \(m) m[h, "se"], 0)
+    za <- qnorm(1 - opt$alpha_mde / 2); zb <- qnorm(opt$power)
     data.frame(hypothesis = h, model = names(p), estimate = round(est, 3),
-               se = round(vapply(tests, \(m) m[h, "se"], 0), 3),
+               se = round(se, 4),
                ci_lo = round(vapply(tests, \(m) m[h, "ci_lo"], 0), 3),
                ci_hi = round(vapply(tests, \(m) m[h, "ci_hi"], 0), 3),
                p_raw = signif(p, 3), p_holm = signif(p.adjust(p, "holm"), 3),
+               mde80 = round((za + zb) * se, 3),                       # smallest effect detectable with 80% power
+               power_at_min = round(pnorm(opt$delta_min / se - za), 3), # power to detect delta_min
+               powered = pnorm(opt$delta_min / se - za) >= opt$power,
                row.names = NULL)
   }))
   print(holm, row.names = FALSE)
+  cat(sprintf(paste0("\nmde80 = smallest true effect detectable with %.0f%% power at alpha = %.4f ",
+                     "(= %.3f x SE); power_at_min = power to detect %.2f points; ",
+                     "powered = power_at_min >= %.0f%%.\n"),
+              100 * opt$power, opt$alpha_mde,
+              qnorm(1 - opt$alpha_mde / 2) + qnorm(opt$power),
+              opt$delta_min, 100 * opt$power))
   write.csv(holm, file.path(opt$out_dir, "hypothesis_tests.csv"), row.names = FALSE)
   write.csv(do.call(rbind, Map(\(f, t) cbind(model = f, t), names(coefs), coefs)),
             file.path(opt$out_dir, "condition_coefficients.csv"), row.names = FALSE)
@@ -292,14 +312,14 @@ latex_tables <- function(res, d) {
   h <- res$holm
   con <- file(f2, "w")
   writeLines(c(
-    "\\begin{tabular}{llrrlr}",
+    "\\begin{tabular}{llrrlrr}",
     "\\toprule",
-    "Hypothesis & Model & Estimate & SE & 95\\% CI & $p$ (Holm) \\\\",
+    "Hypothesis & Model & Estimate & SE & 95\\% CI & MDE$_{80}$ & $p$ (Holm) \\\\",
     "\\midrule"), con)
   for (i in seq_len(nrow(h))) {
-    writeLines(sprintf("%s & %s & %.3f & %.3f & [%.3f, %.3f] & %.3f \\\\",
+    writeLines(sprintf("%s & %s & %.3f & %.3f & [%.3f, %.3f] & %.3f & %.3f \\\\",
                        h$hypothesis[i], h$model[i], h$estimate[i], h$se[i],
-                       h$ci_lo[i], h$ci_hi[i], h$p_holm[i]), con)
+                       h$ci_lo[i], h$ci_hi[i], h$mde80[i], h$p_holm[i]), con)
   }
   writeLines(c("\\bottomrule", "\\end{tabular}"), con); close(con)
   cat("LaTeX tables:", f1, "and", f2, "\n")

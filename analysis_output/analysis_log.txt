@@ -1,0 +1,238 @@
+Analysis run: 2026-10-27 23:15:36 
+Input: results_main/calls.csv | delivery: text | score column: score 
+
+================ COLLECTION ================
+Calls: 10944  valid: 10944 (100.0%)
+
+Status by model:
+           
+              ok
+  anthropic 3648
+  google    3648
+  openai    3648
+
+Shape of reply:
+           
+            bare_number prose
+  anthropic        3645     3
+  google           3648     0
+  openai           3648     0
+
+Replies where first-number and last-number parsing disagree: 0 
+
+Observations per document x condition (valid only):
+            
+             Neutral Human ChatGPT Claude Gemini Chen
+  Assignment     456   456     456    456    456  456
+  Book           456   456     456    456    456  456
+  Chess          456   456     456    456    456  456
+  Cournot        456   456     456    456    456  456
+
+Providers and model versions:
+       family             model_requested              model_returned
+1      openai          openai/gpt-6.1-sol          openai/gpt-6.1-sol
+28     google       google/gemini-4-argon       google/gemini-4-argon
+36     google       google/gemini-4-argon       google/gemini-4-argon
+44  anthropic anthropic/claude-sonnet-5.5 anthropic/claude-sonnet-5.5
+243    openai          openai/gpt-6.1-sol          openai/gpt-6.1-sol
+                  provider
+1                   OpenAI
+28                  Google
+36        Google AI Studio
+44  Claude Platform on AWS
+243                  Azure
+
+Input tokens by document (should vary only a few tokens across conditions):
+           Neutral  Human ChatGPT Claude Gemini   Chen
+Assignment  4369.0 4374.3  4375.0 4373.3 4374.0 4373.3
+Book        1740.7 1746.0  1746.7 1745.0 1745.7 1745.0
+Chess       2301.7 2307.0  2307.7 2306.0 2306.7 2306.0
+Cournot      545.3  550.7   551.3  549.7  550.3  549.7
+
+Median seconds per call: 2.5  total cost: 35.97 
+
+================ DESCRIPTIVES ================
+Score range: 2.5 - 6.8  mean: 5.429 
+
+Mean by model and condition:
+          Neutral Human ChatGPT Claude Gemini  Chen
+anthropic   4.213 4.460   4.398  4.393  4.586 4.409
+google      6.111 6.197   5.864  6.006  5.981 6.144
+openai      5.804 5.921   5.745  5.763  5.802 5.920
+
+SD by model and condition:
+          Neutral Human ChatGPT Claude Gemini  Chen
+anthropic   0.707 0.971   0.912  0.701  0.859 0.808
+google      0.328 0.332   0.437  0.338  0.379 0.364
+openai      0.301 0.286   0.386  0.402  0.294 0.300
+
+Mean by document and condition (all models pooled):
+           Neutral Human ChatGPT Claude Gemini  Chen
+Assignment   5.534 5.607   5.400  5.404  5.490 5.521
+Book         4.971 5.167   4.820  4.862  5.181 5.043
+Chess        5.848 6.205   6.105  5.929  6.109 6.112
+Cournot      5.150 5.124   5.018  5.354  5.045 5.289
+
+================ CONFIRMATORY (pre-registered) ================
+
+--- anthropic | anthropic/claude-sonnet-5.5 | n = 3648 | residual SD = 0.33 | own label: Claude ---
+ estimate     se p
+   0.2469 0.0180 0
+   0.1847 0.0162 0
+   0.1804 0.0220 0
+   0.3732 0.0188 0
+   0.1965 0.0178 0
+
+    estimate     se       z      p   ci_lo   ci_hi
+H1    0.1227 0.0122 10.0715 0.0000  0.0988  0.1465
+H2   -0.0985 0.0198 -4.9882 0.0000 -0.1372 -0.0598
+H3    0.2789 0.0154 18.0682 0.0000  0.2487  0.3092
+H4    0.0731 0.0152  4.8004 0.0000  0.0433  0.1030
+H4b  -0.0503 0.0176 -2.8649 0.0042 -0.0848 -0.0159
+
+--- google | google/gemini-4-argon | n = 3648 | residual SD = 0.283 | own label: Gemini ---
+ estimate     se     p
+   0.0868 0.0161 0.000
+  -0.2461 0.0167 0.000
+  -0.1046 0.0165 0.000
+  -0.1293 0.0162 0.000
+   0.0337 0.0165 0.041
+
+    estimate     se        z      p   ci_lo   ci_hi
+H1   -0.2034 0.0105 -19.4602 0.0000 -0.2239 -0.1829
+H2    0.0461 0.0139   3.3045 0.0010  0.0187  0.0734
+H3   -0.1753 0.0144 -12.2124 0.0000 -0.2035 -0.1472
+H4   -0.0097 0.0141  -0.6868 0.4922 -0.0374  0.0180
+H4b  -0.0531 0.0160  -3.3171 0.0009 -0.0845 -0.0217
+
+--- openai | openai/gpt-6.1-sol | n = 3648 | residual SD = 0.155 | own label: ChatGPT ---
+ estimate     se      p
+   0.1173 0.0085 0.0000
+  -0.0584 0.0095 0.0000
+  -0.0410 0.0095 0.0000
+  -0.0020 0.0091 0.8281
+   0.1164 0.0080 0.0000
+
+    estimate     se        z      p   ci_lo   ci_hi
+H1   -0.0924 0.0058 -15.9272 0.0000 -0.1038 -0.0810
+H2   -0.0369 0.0085  -4.3332 0.0000 -0.0536 -0.0202
+H3   -0.0215 0.0080  -2.6915 0.0071 -0.0371 -0.0058
+H4    0.0578 0.0064   8.9936 0.0000  0.0452  0.0704
+H4b  -0.0008 0.0074  -0.1114 0.9113 -0.0153  0.0136
+
+--- Holm-adjusted across models, within hypothesis ---
+ hypothesis     model estimate     se  ci_lo  ci_hi    p_raw   p_holm mde80
+         H1 anthropic    0.123 0.0122  0.099  0.147 7.38e-24 7.38e-24 0.039
+         H1    google   -0.203 0.0105 -0.224 -0.183 2.39e-84 7.17e-84 0.034
+         H1    openai   -0.092 0.0058 -0.104 -0.081 4.10e-57 8.21e-57 0.019
+         H2 anthropic   -0.099 0.0198 -0.137 -0.060 6.10e-07 1.83e-06 0.064
+         H2    google    0.046 0.0139  0.019  0.073 9.52e-04 9.52e-04 0.045
+         H2    openai   -0.037 0.0085 -0.054 -0.020 1.47e-05 2.94e-05 0.028
+         H3 anthropic    0.279 0.0154  0.249  0.309 5.68e-73 1.70e-72 0.050
+         H3    google   -0.175 0.0144 -0.203 -0.147 2.67e-34 5.34e-34 0.046
+         H3    openai   -0.021 0.0080 -0.037 -0.006 7.11e-03 7.11e-03 0.026
+         H4 anthropic    0.073 0.0152  0.043  0.103 1.58e-06 3.17e-06 0.049
+         H4    google   -0.010 0.0141 -0.037  0.018 4.92e-01 4.92e-01 0.046
+         H4    openai    0.058 0.0064  0.045  0.070 2.39e-19 7.17e-19 0.021
+        H4b anthropic   -0.050 0.0176 -0.085 -0.016 4.17e-03 8.34e-03 0.057
+        H4b    google   -0.053 0.0160 -0.085 -0.022 9.09e-04 2.73e-03 0.052
+        H4b    openai   -0.001 0.0074 -0.015  0.014 9.11e-01 9.11e-01 0.024
+ power_at_min powered
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        0.996    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+        1.000    TRUE
+
+mde80 = smallest true effect detectable with 80% power at alpha = 0.0167 (= 3.236 x SE); power_at_min = power to detect 0.10 points; powered = power_at_min >= 80%.
+
+================ ROBUSTNESS (not pre-registered) ================
+
+Kruskal-Wallis across the six conditions, by model
+(on scores centred within document, so document differences drop out):
+
+	Kruskal-Wallis rank sum test
+
+data:  dev by lab
+Kruskal-Wallis chi-squared = 366.73, df = 5, p-value < 2.2e-16
+
+
+	Kruskal-Wallis rank sum test
+
+data:  dev by lab
+Kruskal-Wallis chi-squared = 476.58, df = 5, p-value < 2.2e-16
+
+
+	Kruskal-Wallis rank sum test
+
+data:  dev by lab
+Kruskal-Wallis chi-squared = 686.84, df = 5, p-value < 2.2e-16
+
+
+Pairwise Wilcoxon vs the neutral condition (Holm-adjusted within model):
+      model condition   p_holm
+1 anthropic     Human 0.00e+00
+2 anthropic   ChatGPT 0.00e+00
+3 anthropic    Claude 1.29e-14
+4 anthropic    Gemini 0.00e+00
+5 anthropic      Chen 0.00e+00
+   model condition   p_holm
+1 google     Human 2.55e-08
+2 google   ChatGPT 8.70e-38
+3 google    Claude 2.91e-09
+4 google    Gemini 2.57e-12
+5 google      Chen 1.34e-02
+   model condition   p_holm
+1 openai     Human 0.00e+00
+2 openai   ChatGPT 5.26e-06
+3 openai    Claude 3.04e-04
+4 openai    Gemini 8.88e-01
+5 openai      Chen 0.00e+00
+
+Per-document H1 (AI labels minus human label), by model:
+     model        doc ai_mean human_mean   diff
+ anthropic Assignment   4.559      4.727 -0.168
+ anthropic       Book   3.880      3.750  0.130
+ anthropic      Chess   5.649      5.871 -0.222
+ anthropic    Cournot   3.748      3.491  0.257
+    google Assignment   6.082      6.327 -0.245
+    google       Book   5.673      6.142 -0.469
+    google      Chess   6.318      6.461 -0.143
+    google    Cournot   5.729      5.859 -0.130
+    openai Assignment   5.654      5.767 -0.114
+    openai       Book   5.310      5.609 -0.299
+    openai      Chess   6.176      6.284 -0.109
+    openai    Cournot   5.940      6.023 -0.083
+
+Score frequencies by condition (pooled models):
+         y
+          2.5 2.8 3.5 3.8   4 4.2 4.5 4.6 4.7 4.8   5 5.1 5.2 5.3 5.4 5.5 5.6
+  Neutral   0   0 272  19   5   0 107   1   0  26 144   1  19  13  56 158  91
+  Human     1   1 262   1   2   0  96   2   0  59  30   0   2   4  31 102  54
+  ChatGPT   0   0 232  34  11   1 178   0   2  26  20   6  97  24  78 136  57
+  Claude    0   0 182   8   4   0 268   1   2  34  28   5  56  18  75 219  75
+  Gemini    1   0 171   2   1   0 200   5   0  62  15   0  36  12  65 175  99
+  Chen      0   0 206   0  35   0 210   0   0   2   3   0   8  11  57 174  84
+         y
+          5.7 5.8 5.9   6 6.1 6.2 6.3 6.4 6.5 6.8
+  Neutral  36 222   1  97  10 325  60  58 100   3
+  Human    32 320   0 148  13 295 109  86 155  19
+  ChatGPT  24 365   0 134  22 244  47  27  59   0
+  Claude   18 213   0 103  10 343  69  46  47   0
+  Gemini   25 365   0 117  18 289  59  49  58   0
+  Chen     19 255   0 128  10 291 115  53 141  22
+
+Figures written to analysis_output 
+LaTeX tables: analysis_output/table_conditions.tex and analysis_output/table_hypotheses.tex 
+
+Done. Output in analysis_output 

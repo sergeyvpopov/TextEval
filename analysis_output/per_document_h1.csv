@@ -1,0 +1,13 @@
+"model","doc","ai_mean","human_mean","diff"
+"anthropic","Assignment",4.559,4.727,-0.168
+"anthropic","Book",3.88,3.75,0.13
+"anthropic","Chess",5.649,5.871,-0.222
+"anthropic","Cournot",3.748,3.491,0.257
+"google","Assignment",6.082,6.327,-0.245
+"google","Book",5.673,6.142,-0.469
+"google","Chess",6.318,6.461,-0.143
+"google","Cournot",5.729,5.859,-0.13
+"openai","Assignment",5.654,5.767,-0.114
+"openai","Book",5.31,5.609,-0.299
+"openai","Chess",6.176,6.284,-0.109
+"openai","Cournot",5.94,6.023,-0.083

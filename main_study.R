@@ -1,13 +1,16 @@
 # ==============================================================================
 # MAIN STUDY — "Same Text, Different Filename: Are LLMs Biased?"
-# Pre-registration: AsPredicted #312192
+# Pre-registration: AsPredicted #320377 (https://aspredicted.org/vp8ez6.pdf)
+#   v3; updates #314219 (qj59r2) and #312192 (sq9mp2). Label is sent inline as a header line.
 #
-# Documents are sent as ATTACHED FILES; the only thing that varies within a
-# document is the file name. Nothing is renamed or copied on disk: the frozen
-# file is read once and the label is set per request.
+# Delivery: the label is sent INLINE as a header line, "[Attached file: <name>]",
+# above the document text (OpenRouter strips filenames from real attachments;
+# see probe results, 27 Oct 2026). Nothing is renamed or copied on disk: the
+# frozen file is read once and the label is set per request.
 #
-# Design : 4 documents x 5 file-name conditions x n_reps, per model
-# Sizing : sigma = 0.536 (pilot) -> 63 reps/cell for H1, 113 for H2/H3 at 0.10
+# Design : 4 documents x 6 file-name conditions x n_reps, per model
+# Sizing : sigma = 0.536 (pilot) -> 63 reps/cell for H1, 113 for H2/H3,
+#          ~151 for H4b (Chen vs Sergey; 152 registered) at Delta = 0.10, alpha = 0.0167, 80% power
 # Depends: httr2, jsonlite  (HC3 and the contrasts are computed in base R)
 #
 # Outputs (cfg$out_dir):
@@ -22,13 +25,18 @@ library(httr2)
 library(jsonlite)
 `%||%` <- function(a, b) if (is.null(a) || length(a) == 0) b else a
 
+# jsonlite::base64_enc() wraps its output with line breaks, which OpenRouter
+# rejects ("Invalid content"). Strip all whitespace so the data URL is one line.
+b64 <- function(x) gsub("[\r\n ]", "", jsonlite::base64_enc(x))
+
+
 # ---------------------------------- Config ------------------------------------
 cfg <- list(
   api_key   = Sys.getenv("OPENROUTER_API_KEY"),
   # One current model per family. Record exact ids; they are logged per call.
-  models    = c(openai    = "openai/REPLACE",
-                anthropic = "anthropic/REPLACE",
-                google    = "google/REPLACE"),
+  models    = c(openai    = "openai/gpt-6.1-sol",
+                anthropic = "anthropic/claude-sonnet-5.5",
+                google    = "google/gemini-4-argon"),
   # Which label each model's own family corresponds to (for H2/H3).
   family_label = c(openai    = "Document_from_ChatGPT.md",
                    anthropic = "Document_from_Claude.md",
@@ -38,9 +46,10 @@ cfg <- list(
                 "Document_from_Sergey.md",
                 "Document_from_ChatGPT.md",
                 "Document_from_Claude.md",
-                "Document_from_Gemini.md"),
-  n_reps    = 113,          # H2/H3 binding constraint at Delta = 0.10
-  delivery  = "file",       # main study = attached file; "text" = robustness arm
+                "Document_from_Gemini.md",
+                "Document_from_Chen.md"),
+  n_reps    = 152,          # pre-registered minimum per document-label cell (#314219)
+  delivery  = "text",       # OpenRouter strips filenames from attached files (probed 27 Oct 2026), so the label is sent inline: "[Attached file: <name>]"
   max_tokens = 1000,        # plenty for a number; reasoning models are screened out
   suppress_reasoning = TRUE,
   pause_sec = 0.5,
@@ -102,7 +111,7 @@ build_content <- function(doc, filename, instruction) {
     list(list(type = "text", text = instruction),
          list(type = "file", file = list(
            filename  = filename,
-           file_data = paste0("data:text/markdown;base64,", base64_enc(doc$raw)))))
+           file_data = paste0("data:text/markdown;base64,", b64(doc$raw)))))
   } else {
     list(list(type = "text", text = paste0(
       instruction, "\n\n[Attached file: ", filename, "]\n\n", doc$text)))
@@ -311,6 +320,9 @@ run <- function(family = NULL, max_calls = Inf) {
 # Contrasts: H1 = mean(AI labels) - mean(neutral, human)
 #            H2 = own-family label - mean(two rival labels)
 #            H3 = mean(two rival labels) - neutral
+#            H4 = Chen - mean(Sergey, neutral)   (as worded in #314219)
+#            H4b = Chen - Sergey only (pure name contrast; stricter, not separately registered)
+# Chen has weight 0 in H1-H3, so those contrasts are unchanged.
 hc3_fit <- function(y, X) {
   XtXi <- solve(crossprod(X))
   b <- XtXi %*% crossprod(X, y)
@@ -360,7 +372,13 @@ analyse <- function(score_col = "score", delivery = cfg$delivery) {
                                      else 0))
     h3 <- contrast_test(fit, wv(\(n) if (any(vapply(riv, \(k) has(n, k), TRUE))) 1/2 else 0))
 
-    out[[fam]] <- rbind(H1 = h1, H2 = h2, H3 = h3)
+    # H4: Chen minus Sergey (neither is the omitted category)
+    h4  <- contrast_test(fit, wv(\(n) if (has(n, "Chen")) 1
+                                     else if (has(n, "Sergey")) -1/2 else 0))
+    h4b <- contrast_test(fit, wv(\(n) if (has(n, "Chen")) 1
+                                     else if (has(n, "Sergey")) -1 else 0))
+
+    out[[fam]] <- rbind(H1 = h1, H2 = h2, H3 = h3, H4 = h4, H4b = h4b)
     cat("\n===", fam, "|", unique(s$model_requested), "| n =", fit$n,
         "| residual SD =", round(fit$rss_sd, 3), "===\n")
     cond <- fit$b[grep("^label", nm)]
@@ -370,7 +388,7 @@ analyse <- function(score_col = "score", delivery = cfg$delivery) {
 
   # Holm adjustment across models, within each hypothesis (as pre-registered)
   cat("\n=== Holm-adjusted p-values across models ===\n")
-  for (h in c("H1", "H2", "H3")) {
+  for (h in c("H1", "H2", "H3", "H4", "H4b")) {
     ps <- vapply(out, \(m) m[h, "p"], 0)
     print(data.frame(hypothesis = h, family = names(ps),
                      estimate = round(vapply(out, \(m) m[h, "estimate"], 0), 3),

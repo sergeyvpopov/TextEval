@@ -1,6 +1,7 @@
 # ==============================================================================
 # ANALYSIS — "Same Text, Different Filename: Are LLMs Biased?"
-# Pre-registration: AsPredicted #312192
+# Pre-registration: AsPredicted #320377 (https://aspredicted.org/vp8ez6.pdf)
+#   v3; updates #314219 (qj59r2) and #312192 (sq9mp2). Label is sent inline as a header line.
 #
 # Reads results_main/calls.csv (produced by main_study.R) and writes tables,
 # figures and LaTeX fragments to analysis_output/.
@@ -17,18 +18,20 @@
 opt <- list(
   csv       = "results_main/calls.csv",
   out_dir   = "analysis_output",
-  delivery  = "file",            # "file" = main study; "text" = robustness arm
+  delivery  = "text",            # inline label (OpenRouter strips filenames from attachments); "file" = not usable via OpenRouter
   score_col = "score",           # "score_alt" for the last-number robustness check
   labels    = c("Document.md",
                 "Document_from_Sergey.md",
                 "Document_from_ChatGPT.md",
                 "Document_from_Claude.md",
-                "Document_from_Gemini.md"),
+                "Document_from_Gemini.md",
+                "Document_from_Chen.md"),
   label_short = c("Document.md" = "Neutral",
                   "Document_from_Sergey.md" = "Human",
                   "Document_from_ChatGPT.md" = "ChatGPT",
                   "Document_from_Claude.md" = "Claude",
-                  "Document_from_Gemini.md" = "Gemini"),
+                  "Document_from_Gemini.md" = "Gemini",
+                  "Document_from_Chen.md" = "Chen"),
   family_label = c(openai = "ChatGPT", anthropic = "Claude", google = "Gemini")
 )
 dir.create(opt$out_dir, showWarnings = FALSE)
@@ -136,7 +139,11 @@ hypotheses <- function(fit, own) {
                               else if (has(n, "Human")) -1/2 else 0)),
     H2 = contrast_test(fit, w(\(n) if (has(n, own)) 1
                               else if (any(vapply(riv, \(k) has(n, k), TRUE))) -1/2 else 0)),
-    H3 = contrast_test(fit, w(\(n) if (any(vapply(riv, \(k) has(n, k), TRUE))) 1/2 else 0))
+    H3 = contrast_test(fit, w(\(n) if (any(vapply(riv, \(k) has(n, k), TRUE))) 1/2 else 0)),
+    # H4 as worded in #314219: Chen minus mean(Sergey, neutral); neutral drops out
+    H4 = contrast_test(fit, w(\(n) if (has(n, "Chen")) 1 else if (has(n, "Human")) -1/2 else 0)),
+    # H4b: Chen minus Sergey only (stricter name contrast, not separately registered)
+    H4b = contrast_test(fit, w(\(n) if (has(n, "Chen")) 1 else if (has(n, "Human")) -1 else 0))
   )
 }
 
@@ -165,7 +172,7 @@ confirmatory <- function(d) {
   }
 
   cat("\n--- Holm-adjusted across models, within hypothesis ---\n")
-  holm <- do.call(rbind, lapply(c("H1", "H2", "H3"), function(h) {
+  holm <- do.call(rbind, lapply(c("H1", "H2", "H3", "H4", "H4b"), function(h) {
     est <- vapply(tests, \(m) m[h, "estimate"], 0)
     p <- vapply(tests, \(m) m[h, "p"], 0)
     data.frame(hypothesis = h, model = names(p), estimate = round(est, 3),
@@ -187,7 +194,7 @@ robustness <- function(d) {
   s <- d[d$valid, ]; y <- s[[opt$score_col]]
   cat("\n================ ROBUSTNESS (not pre-registered) ================\n")
 
-  cat("\nKruskal-Wallis across the five conditions, by model\n")
+  cat("\nKruskal-Wallis across the six conditions, by model\n")
   cat("(on scores centred within document, so document differences drop out):\n")
   s$dev <- y - ave(y, s$doc_id, s$family, FUN = mean)
   for (f in levels(s$family)) {

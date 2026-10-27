@@ -1,0 +1,19 @@
+"model","delivery","label","rep","status","reply","seen"
+"anthropic/claude-sonnet-5.5","file","Document.md",1,"ok","I can't tell the filename from what I was given. The document has no filename attached, only its content, which begins w",FALSE
+"anthropic/claude-sonnet-5.5","file","Document.md",2,"ok","I can't tell the filename. The document came through as text only, with no filename or metadata attached. The closest th",FALSE
+"anthropic/claude-sonnet-5.5","file","Document.md",3,"ok","I can't tell the filename from what you attached. The document came through as text only, with no filename or other meta",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Sergey.md",1,"ok","I can't tell the filename. The document was passed to me as text with no filename or metadata, only the content, which b",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Sergey.md",2,"ok","I can't determine the filename. The document was given to me as text only, with no filename in its metadata. The closest",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Sergey.md",3,"ok","I can't tell the filename. The document was provided only as text content, with no filename or metadata. The title insid",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_ChatGPT.md",1,"ok","I can't tell the filename from what was provided. The document came through as text content only, with no filename or me",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_ChatGPT.md",2,"ok","I can't tell the filename from what was provided. The document came through as text only, with no filename or other meta",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_ChatGPT.md",3,"ok","I can't tell the filename from what was provided. The document came through as text content only, with no filename or me",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Claude.md",1,"ok","I can't tell the filename. The document came through as text only, with no filename or metadata. The nearest thing is it",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Claude.md",2,"ok","I can't tell the filename. The document came through as plain text with no filename or metadata, only the content, which",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Claude.md",3,"ok","I can't tell the filename. The document came through as text content only, with no filename or other metadata. The close",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Gemini.md",1,"ok","I can't tell the filename from what I was given. The document has no filename in its metadata, only an index number and ",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Gemini.md",2,"ok","I can't tell the filename from what I was given. The document has no filename in its metadata, only an index number and ",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Gemini.md",3,"ok","I can't tell the filename from what I was given. The document has no filename in its metadata, only an index number and ",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Chen.md",1,"ok","I can't tell the filename. The document came through as text only, with no filename or other metadata. The closest thing",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Chen.md",2,"ok","I can't tell you the filename. The document was given to me as text only, and no filename came with it. The closest thin",FALSE
+"anthropic/claude-sonnet-5.5","file","Document_from_Chen.md",3,"ok","I can't tell the filename from what you attached. The document came through as text only, with no filename or metadata. ",FALSE

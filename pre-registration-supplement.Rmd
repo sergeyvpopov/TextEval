@@ -139,3 +139,88 @@ These were not listed in the registration and, if budget permits, will be report
 - Frequency tables of scores by condition.
 - Valid-reply rates by condition (chi-squared test).
 - Within-document permutation tests of each contrast, as a robustness check.
+
+---
+
+# Addendum: changes and deviations recorded after data collection
+
+**Written:** 28 October 2026, after data collection (27 October 2026) and after the registered analysis was run.
+**Status of the text above:** unchanged from the version committed on 18 September 2026. It is kept as written so that the commitments can be compared with what was done. This addendum does not alter the AsPredicted registrations (#312192, #314219, #320377) or the hypotheses.
+
+## A1. Registration chain
+
+1. **#312192** (18 September 2026): original registration, five labels, file attachment, hypotheses H1–H3. This supplement was committed the same day.
+2. **#314219:** adds the Chen label and hypothesis H4 (with the supplementary comparison H4b), and fixes 152 repetitions per document–label cell.
+3. **#320377** (v3): changes delivery from file attachment to an inline header line, because OpenRouter strips file names from attachments (A3).
+
+Where this file's sections 1, 5, 8, 9 and 10 conflict with #314219 or #320377, the later registration and the code in `main_study.R` and `analysis.R` are authoritative.
+
+## A2. Summary of what changed
+
+| Section above | Planned in this supplement | What was done |
+|---|---|---|
+| 1 Sample size | 150 repetitions, 5 labels, 20 combinations per repetition, 3,000 calls per model | 152 repetitions, 6 labels, 24 combinations per repetition, 3,648 calls per model, 10,944 in total (#314219) |
+| 2 Power | σ = 0.536 from the pilot | Realised residual SDs were 0.155 (GPT-6.1 Sol), 0.33 (Claude Sonnet 5.5) and 0.283 (Gemini 4 Argon); minimum detectable effects at 80% power are reported with the results |
+| 3 Models | "ChatGPT 5.6 Sol or Terra, Claude Sonnet 5, Gemini 3.8 flash, with minimal reasoning" | `openai/gpt-6.1-sol`, `anthropic/claude-sonnet-5.5`, `google/gemini-4-argon`, fixed in `main_study.R` before collection (see A4) |
+| 4 API settings | Maximum 4,000 output tokens; fallbacks disabled; all models served by their own vendor | Maximum 1,000 output tokens; no fallback option set; routing left to OpenRouter defaults (A5) |
+| 5 Materials | Five labels, file attachment | Six labels (adds `Document_from_Chen.md`), inline header (A3) |
+| 6 Randomisation | "random seed 1" | The schedule was generated with `set.seed(20260918)` (`seed` in `main_study.R`), saved as `results_main/schedule.csv` |
+| 7 Parsing | First number in the reply, valid if between 0 and 10 | As registered; 3 of 3,648 Claude Sonnet 5.5 replies contained prose and were parsed by the same rule; all 10,944 replies were valid |
+| 8 Exclusion rules | Rules 1–6 | See A6; no call was excluded |
+| 9 Confirmatory analysis | H1–H3, Holm across models | H1–H3, H4 and H4b (#314219); Holm across the three models within each hypothesis; HC3 standard errors; minimum detectable effect and power at 0.10 points added to the results table |
+| 10 Exploratory analyses | Listed in section 10 | See A7 |
+
+File names in the text above (`Main_study.R`, `Analysis.R`) are `main_study.R` and `analysis.R` in the repository.
+
+## A3. Delivery of the file name
+
+Probes before the main run asked each model to report the file name of an attached document (18 calls per model: six labels, three repetitions each; outputs in `results_main/probe_*`).
+
+- **Real attachment** (OpenRouter chat endpoint): the model reported the correct file name in **0 of 18** calls for each of the three models. Probes of the Responses endpoint, other text types and a PDF also failed (`probe_direct_openrouter.csv`).
+- **Inline header** `[Attached file: <name>]` above the document text: **18 of 18** correct for each of the three models.
+
+Delivery therefore changed to the inline header for all main-study calls (`delivery = "text"` in every row of `calls.csv`). The prompt still refers to "the attached document". Under rule 4 of section 8 no model was excluded: each reproduced the file name when it was delivered inline. The file name is the same string (`Document.md`, `Document_from_Sergey.md`, and so on) for all four documents.
+
+The exploratory arm in section 10 ("inline-header delivery mode") is therefore the main design.
+
+## A4. Models and timing
+
+The models were fixed in `main_study.R` and used for all calls between 2026-10-27 16:18 and 23:08 UTC. Every response reported the requested model identifier (`model_returned` equals `model_requested` in all 10,944 calls). **[Confirm and add: the commit or registration in which the model choice was fixed before the first main-study call.]**
+
+## A5. API settings and routing
+
+- Temperature: provider default. System prompt: none. Every call is an independent conversation. Prompt text and its hash were identical in every call.
+- Maximum output tokens: 1,000 (supplement: 4,000). All 10,944 replies ended with `finish_reason = stop`.
+- Reasoning: the request sets `reasoning: {exclude: true}`, which removes reasoning from the returned reply but does not turn reasoning off. Reasoning tokens were reported in 99% of GPT-6.1 Sol calls and not reported for the other two models. The supplement's "minimal reasoning" was not implemented.
+- Fallbacks and provider routing were not restricted. Providers recorded in `calls.csv`:
+
+| Model | Provider (number of calls) |
+|---|---|
+| GPT-6.1 Sol | OpenAI (3,644); Azure (4) |
+| Claude Sonnet 5.5 | Claude Platform on AWS (3,648) |
+| Gemini 4 Argon | Google (3,034); Google AI Studio (614) |
+
+The Argon routes are not balanced across labels or documents (Google AI Studio handled few Gemini-label calls and most Assignment calls). A robustness check that adds an AI Studio indicator to the registered regression for Argon changes none of the five contrasts (for example H1 −0.203, SE 0.010 → −0.203, SE 0.011; the indicator is −0.002, SE 0.013). This check is not registered.
+
+## A6. Data collection and exclusions
+
+- All 10,944 scheduled calls returned a valid score between 2.5 and 6.8. No call was excluded under rules 1–6, and the rule on more than 20% invalid or missing calls (rule 6) did not apply.
+- The first run used three parallel background jobs. Simultaneous writes to `calls.csv` corrupted a row, and five trials (two for Claude Sonnet 5.5, three for Gemini 4 Argon) were re-run sequentially. Two OpenAI runs overlapped briefly, which left nine duplicate rows in `calls.csv` (10,953 rows, 10,944 distinct `trial_id` values); the analysis keeps the last row for each `trial_id`.
+- Document checksums in `calls.csv` match `document_checksumsMD5.csv` for every call (rule 3).
+- **Recognition probe (rule 5): not run.** **[Confirm. If it was run, add its output to the repository and report it here.]** The documents are my own unpublished texts, so recognition is unlikely but was not checked.
+
+## A7. Analyses not registered
+
+The following were added after seeing the registered results. They are exploratory and are labelled so in the paper.
+
+- Per-document versions of H1–H4b, with HC3 standard errors and no multiplicity adjustment.
+- A sign test of each contrast across the 152 repetitions (each repetition contains every document–label combination once; contrasts averaged over documents; exact two-sided test; Holm across models within hypothesis). It replaces the within-document permutation tests listed in section 10, which were not run.
+- Variance decomposition into document, file name, document × file name and residual, with an F-test of the interaction.
+- Differences between each file name and the neutral name, summaries of effect sizes, and the spread of single-call scores.
+- Kruskal–Wallis and pairwise Wilcoxon tests and frequency tables (in `analysis.R`).
+- The provider robustness check for Argon (A5).
+- The chi-squared test of valid-reply rates in section 10 is moot because all replies were valid.
+
+## A8. Inference
+
+Standard errors are HC3 and are not clustered. With four documents, clustering by document is not feasible, so inference is conditional on these four documents and does not extend to other texts. This is stated in the paper.

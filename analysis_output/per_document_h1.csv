@@ -1,4 +1,4 @@
-"model","doc","ai_mean","human_mean","diff"
+"model","doc","ai_mean","sergey_mean","diff"
 "anthropic","Assignment",4.559,4.727,-0.168
 "anthropic","Book",3.88,3.75,0.13
 "anthropic","Chess",5.649,5.871,-0.222

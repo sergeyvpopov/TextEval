@@ -32,7 +32,7 @@ opt <- list(
                 "Document_from_Gemini.md",
                 "Document_from_Chen.md"),
   label_short = c("Document.md" = "Neutral",
-                  "Document_from_Sergey.md" = "Human",
+                  "Document_from_Sergey.md" = "Sergey",
                   "Document_from_ChatGPT.md" = "ChatGPT",
                   "Document_from_Claude.md" = "Claude",
                   "Document_from_Gemini.md" = "Gemini",
@@ -145,14 +145,14 @@ hypotheses <- function(fit, own) {
   has <- function(n, k) grepl(paste0("^lab", k, "$"), n)
   rbind(
     H1 = contrast_test(fit, w(\(n) if (any(vapply(ai, \(k) has(n, k), TRUE))) 1/3
-                              else if (has(n, "Human")) -1/2 else 0)),
+                              else if (has(n, "Sergey")) -1/2 else 0)),
     H2 = contrast_test(fit, w(\(n) if (has(n, own)) 1
                               else if (any(vapply(riv, \(k) has(n, k), TRUE))) -1/2 else 0)),
     H3 = contrast_test(fit, w(\(n) if (any(vapply(riv, \(k) has(n, k), TRUE))) 1/2 else 0)),
     # H4 as worded in #314219: Chen minus mean(Sergey, neutral); neutral drops out
-    H4 = contrast_test(fit, w(\(n) if (has(n, "Chen")) 1 else if (has(n, "Human")) -1/2 else 0)),
+    H4 = contrast_test(fit, w(\(n) if (has(n, "Chen")) 1 else if (has(n, "Sergey")) -1/2 else 0)),
     # H4b: Chen minus Sergey only (stricter name contrast, not separately registered)
-    H4b = contrast_test(fit, w(\(n) if (has(n, "Chen")) 1 else if (has(n, "Human")) -1 else 0))
+    H4b = contrast_test(fit, w(\(n) if (has(n, "Chen")) 1 else if (has(n, "Sergey")) -1 else 0))
   )
 }
 
@@ -231,14 +231,14 @@ robustness <- function(d) {
                      p_holm = signif(p.adjust(ps, "holm"), 3), row.names = NULL))
   }
 
-  cat("\nPer-document H1 (AI labels minus human label), by model:\n")
+  cat("\nPer-document H1 (AI labels minus Sergey label), by model:\n")
   tab <- do.call(rbind, lapply(levels(s$family), function(f) {
     do.call(rbind, lapply(levels(s$doc_id), function(dd) {
       x <- s[s$family == f & s$doc_id == dd, ]
       ai <- x[[opt$score_col]][x$lab %in% c("ChatGPT", "Claude", "Gemini")]
-      hu <- x[[opt$score_col]][x$lab == "Human"]
+      hu <- x[[opt$score_col]][x$lab == "Sergey"]
       data.frame(model = f, doc = dd, ai_mean = round(mean(ai), 3),
-                 human_mean = round(mean(hu), 3), diff = round(mean(ai) - mean(hu), 3))
+                 sergey_mean = round(mean(hu), 3), diff = round(mean(ai) - mean(hu), 3))
     }))
   }))
   print(tab, row.names = FALSE)
@@ -298,7 +298,7 @@ latex_tables <- function(res, d) {
   f1 <- file.path(opt$out_dir, "table_conditions.tex")
   con <- file(f1, "w")
   writeLines(c(
-    "\\begin{tabular}{lrrrrr}",
+    "\\begin{tabular}{lrrrrrr}",
     "\\toprule",
     paste("Model &", paste(levels(s$lab), collapse = " & "), "\\\\"),
     "\\midrule"), con)
@@ -317,9 +317,10 @@ latex_tables <- function(res, d) {
     "Hypothesis & Model & Estimate & SE & 95\\% CI & MDE$_{80}$ & $p$ (Holm) \\\\",
     "\\midrule"), con)
   for (i in seq_len(nrow(h))) {
-    writeLines(sprintf("%s & %s & %.3f & %.3f & [%.3f, %.3f] & %.3f & %.3f \\\\",
+    writeLines(sprintf("%s & %s & %.3f & %.3f & [%.3f, %.3f] & %.3f & %s \\\\",
                        h$hypothesis[i], h$model[i], h$estimate[i], h$se[i],
-                       h$ci_lo[i], h$ci_hi[i], h$mde80[i], h$p_holm[i]), con)
+                       h$ci_lo[i], h$ci_hi[i], h$mde80[i],
+                       if (h$p_holm[i] < 0.001) "$<$0.001" else sprintf("%.3f", h$p_holm[i])), con)
   }
   writeLines(c("\\bottomrule", "\\end{tabular}"), con); close(con)
   cat("LaTeX tables:", f1, "and", f2, "\n")

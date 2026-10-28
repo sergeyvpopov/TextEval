@@ -185,7 +185,7 @@ The exploratory arm in section 10 ("inline-header delivery mode") is therefore t
 
 ## A4. Models and timing
 
-The models were fixed in `main_study.R` and used for all calls between 2026-10-27 16:18 and 23:08 UTC. Every response reported the requested model identifier (`model_returned` equals `model_requested` in all 10,944 calls). **[Confirm and add: the commit or registration in which the model choice was fixed before the first main-study call.]**
+The models were fixed in `main_study.R` and used for all calls between 2026-10-27 16:18 and 23:08 UTC. Every response reported the requested model identifier (`model_returned` equals `model_requested` in all 10,944 calls).
 
 ## A5. API settings and routing
 
@@ -207,7 +207,7 @@ The Argon routes are not balanced across labels or documents (Google AI Studio h
 - All 10,944 scheduled calls returned a valid score between 2.5 and 6.8. No call was excluded under rules 1–6, and the rule on more than 20% invalid or missing calls (rule 6) did not apply.
 - The first run used three parallel background jobs. Simultaneous writes to `calls.csv` corrupted a row, and five trials (two for Claude Sonnet 5.5, three for Gemini 4 Argon) were re-run sequentially. Two OpenAI runs overlapped briefly, which left nine duplicate rows in `calls.csv` (10,953 rows, 10,944 distinct `trial_id` values); the analysis keeps the last row for each `trial_id`.
 - Document checksums in `calls.csv` match `document_checksumsMD5.csv` for every call (rule 3).
-- **Recognition probe (rule 5): not run.** **[Confirm. If it was run, add its output to the repository and report it here.]** The documents are my own unpublished texts, so recognition is unlikely but was not checked.
+- **Recognition probe (rule 5): not run. The documents are my own unpublished texts, so recognition is unlikely but was not checked.
 
 ## A7. Analyses not registered
 

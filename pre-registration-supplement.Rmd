@@ -160,7 +160,7 @@ Where this file's sections 1, 5, 8, 9 and 10 conflict with #314219 or #320377, t
 | Section above | Planned in this supplement | What was done |
 |---|---|---|
 | 1 Sample size | 150 repetitions, 5 labels, 20 combinations per repetition, 3,000 calls per model | 152 repetitions, 6 labels, 24 combinations per repetition, 3,648 calls per model, 10,944 in total (#314219) |
-| 2 Power | σ = 0.536 from the pilot | Realised residual SDs were 0.155 (GPT-6.1 Sol), 0.33 (Claude Sonnet 5.5) and 0.283 (Gemini 4 Argon); minimum detectable effects at 80% power are reported with the results |
+| 2 Power | Two-group comparison, σ = 0.536 from the pilot, δ = 0.1, 80% power, N = 113 per document–label cell | Repetitions were set per registered contrast (the paper reports 90% power: 63 for H1, 113 for H2–H4, 152 for H4b), and 152 were run. Realised residual SDs were 0.155 (GPT-6.1 Sol), 0.33 (Claude Sonnet 5.5) and 0.283 (Gemini 4 Argon); realised minimum detectable effects at 80% power are reported with the results. See A9 |
 | 3 Models | "ChatGPT 5.6 Sol or Terra, Claude Sonnet 5, Gemini 3.8 flash, with minimal reasoning" | `openai/gpt-6.1-sol`, `anthropic/claude-sonnet-5.5`, `google/gemini-4-argon`, fixed in `main_study.R` before collection (see A4) |
 | 4 API settings | Maximum 4,000 output tokens; fallbacks disabled; all models served by their own vendor | Maximum 1,000 output tokens; no fallback option set; routing left to OpenRouter defaults (A5) |
 | 5 Materials | Five labels, file attachment | Six labels (adds `Document_from_Chen.md`), inline header (A3) |
@@ -207,7 +207,7 @@ The Argon routes are not balanced across labels or documents (Google AI Studio h
 - All 10,944 scheduled calls returned a valid score between 2.5 and 6.8. No call was excluded under rules 1–6, and the rule on more than 20% invalid or missing calls (rule 6) did not apply.
 - The first run used three parallel background jobs. Simultaneous writes to `calls.csv` corrupted a row, and five trials (two for Claude Sonnet 5.5, three for Gemini 4 Argon) were re-run sequentially. Two OpenAI runs overlapped briefly, which left nine duplicate rows in `calls.csv` (10,953 rows, 10,944 distinct `trial_id` values); the analysis keeps the last row for each `trial_id`.
 - Document checksums in `calls.csv` match `document_checksumsMD5.csv` for every call (rule 3).
-- **Recognition probe (rule 5): not run. The documents are my own unpublished texts, so recognition is unlikely but was not checked.
+- **Recognition probe (rule 5): not run.** The documents are my own unpublished texts, so recognition is unlikely but was not checked.
 
 ## A7. Analyses not registered
 
@@ -224,3 +224,22 @@ The following were added after seeing the registered results. They are explorato
 ## A8. Inference
 
 Standard errors are HC3 and are not clustered. With four documents, clustering by document is not feasible, so inference is conditional on these four documents and does not extend to other texts. This is stated in the paper.
+
+## A9. Power calculation: what section 2 said and what the paper reports
+
+Section 2 above sizes a two-group comparison (weight factor k = 2) at 80% power and gives N = 113 per document–label cell. The registered hypotheses are contrasts with unequal weights, so their required sample sizes differ. For a contrast with weights w on the label coefficients, the required number of repetitions per document–label cell is
+
+N = k × (z₁₋α/₂ + z₁₋β)² × σ² / (δ² × 4),
+
+where k is the sum of squared contrast weights and the factor 4 converts observations per label (pooled over the four documents) into repetitions per cell. The inputs are σ = 0.536, δ = 0.1 and α = 0.05 (two-sided).
+
+| Contrast | k | N at 80% power | N at 90% power |
+|---|---|---|---|
+| H1: three AI labels (1/3 each) against neutral and Sergey (1/2 each) | 5/6 | 47 | 63 |
+| H2, H3, H4 (one label against two others at weight 1/2 each, or one label with weight 1 against two at 1/2) | 3/2 | 85 | 113 |
+| Two-label difference (H4b: Chen minus Sergey) | 2 | 113 | 151 |
+
+- The paper reports 63, 113 and 152 repetitions, which are the 90% column (rounded up to 152). It states 152 as the requirement for H4, but the primary H4 contrast has k = 3/2 and needs 113; 152 is the requirement for H4b.
+- Section 2 above states 80% power, so the paper's 90% figure is a change in the stated power level, not in the sample. The 152 repetitions per cell set in #314219 satisfy every contrast at either power level.
+- The pilot σ of 0.536 was larger than the residual standard deviations in the main data (0.155 for GPT-6.1 Sol, 0.33 for Claude Sonnet 5.5, 0.283 for Gemini 4 Argon), so the study is better powered than planned. The realised minimum detectable effects at 80% power, with HC3 standard errors, range from 0.019 to 0.064 points across the fifteen model–hypothesis pairs (`analysis_output/hypothesis_tests.csv`), below the smallest effect of interest of 0.1.
+- All calculations are per contrast and conditional on these four documents. They do not give power for effects that generalise to other texts.

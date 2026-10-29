@@ -6,6 +6,8 @@
 # three generator models via OpenRouter. Each text is checked against the
 # preregistered rules; Freeze writes the three .md files and their checksums.
 #
+# Pre-registration: AsPredicted #321045 (https://aspredicted.org/82v8c4.pdf), registered 29 Oct 2026, 15:59 PT
+#
 # Regeneration rules (match these to the preregistration, Q4):
 #   * automatic: word count outside [400, 600], or a truncated/empty reply
 #   * manual, with a logged reason: refusal, commentary about the task, or a

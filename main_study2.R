@@ -1,6 +1,7 @@
 # ==============================================================================
 # MAIN STUDY 2 - "Same Text, Different Filename", Study 2 (LLM-generated documents)
-# Pre-registration: AsPredicted #[number] ([link])
+# Pre-registration: AsPredicted #321045 (https://aspredicted.org/82v8c4.pdf), registered 29 Oct 2026, 15:59 PT
+# Supplement: SUPPLEMENT.md (briefs, checksums, generation and scoring materials)
 #
 # Three judges score 90 frozen LLM-written documents (30 briefs x 3 generators)
 # under 8 labels, 12 repetitions each: 25,920 calls (8,640 per judge).
@@ -48,6 +49,7 @@ cfg2 <- list(
                 "Document_from_Gemini.md"),
   gen_dir   = "results_study2",      # output of generate_documents.R
   n_briefs  = 30,                    # preregistered; checked before running
+  exclude_briefs = "B14ChessAdOlder", # frozen but removed to reach the 30 registered briefs; no scores collected for it
   n_reps    = 12,                    # preregistered
   seed      = 20261029,              # put this number in the preregistration (Q4)
   budget_usd = 60,                   # stop when total logged cost reaches this
@@ -73,6 +75,7 @@ prompt_md5 <- digest_md5(cfg2$prompt)
 load_docs <- function(pilot = FALSE) {
   sums <- read.csv(file.path(cfg2$gen_dir, "document_checksums.csv"), stringsAsFactors = FALSE)
   sums <- sums[if (pilot) sums$genre == "Pilot" else sums$genre != "Pilot", ]
+  if (!pilot) sums <- sums[!(sums$brief_id %in% cfg2$exclude_briefs), ]
   if (!nrow(sums)) stop("No ", if (pilot) "pilot " else "", "documents in ", cfg2$gen_dir)
   docs <- lapply(seq_len(nrow(sums)), function(i) {
     s <- sums[i, ]
@@ -291,7 +294,7 @@ run <- function(family = NULL, pilot = FALSE, max_calls = Inf) {
       }
       Sys.sleep(cfg2$pause_sec)
     }
-    if (fails >= 20 || !is.finite(max_calls)) break
+    if (fails >= 20 || is.finite(max_calls)) break   # a capped test runs one pass; a full run retries failures up to 3 passes
   }
   invisible(NULL)
 }
@@ -315,7 +318,8 @@ estimate_cost <- function() {
 # 1. Generate and freeze documents with generate_documents.R (incl. one "Pilot" brief).
 # 2. run(pilot = TRUE)        # pilot brief only, 2 reps, writes results_study2_pilot/
 #    estimate_cost()          # projected cost of the main study from the pilot
-# 3. Submit the preregistration (seed above in Q4).
+# 3. Preregistered as AsPredicted #321045 (https://aspredicted.org/82v8c4.pdf).
+#    The seed (20261029) and the schedule rules are in SUPPLEMENT.md, section 7.
 # 4. run("openai"); run("anthropic"); run("google")
 #    (or each in its own R session / RStudio background job; files do not collide)
 # 5. source("analysis_study2.R")

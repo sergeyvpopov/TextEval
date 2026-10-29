@@ -1,6 +1,6 @@
 # ==============================================================================
 # ANALYSIS, STUDY 2 - "Same Text, Different Filename", Study 2 (LLM-generated documents)
-# Pre-registration: AsPredicted #[number] ([link])
+# Pre-registration: AsPredicted #321045 (https://aspredicted.org/82v8c4.pdf), registered 29 Oct 2026, 15:59 PT
 #
 # Reads results_study2_main/calls_*.csv (main_study2.R) and writes tables,
 # figures and a log to analysis_output_study2/.

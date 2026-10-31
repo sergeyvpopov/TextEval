@@ -1,0 +1,308 @@
+Study 2 analysis run: 2026-10-30 21:56:45 
+
+================ DATA ================
+Rows in calls files: 25920 | usable records: 25920 
+Complete repetitions per judge: openai = 12, anthropic = 12, google = 12 
+Valid replies: 25920 of 25920 (100.00%)
+Briefs: 30 | documents: 90 | labels: 8 | empty cells: 0 
+
+================ Q1 EXISTENCE (confirmatory) ================
+Permutation test, labels shuffled within each document, 4999 draws.
+                                     test     judge between_label_ss
+ Q1 labels change scores within documents    openai           38.499
+ Q1 labels change scores within documents anthropic          181.839
+ Q1 labels change scores within documents    google           93.180
+ perm_mean_ss p_raw docs_significant_bh05 n_docs p_holm
+        7.282 2e-04                    NA     90  6e-04
+       25.749 2e-04                    NA     90  6e-04
+       15.311 2e-04                    NA     90  6e-04
+
+================ Q2 SIZE (confirmatory estimates; points on the 0-10 scale) ================
+label_sd: SD of label effects within a document; between_sd: SD of document means;
+ label_to_between: their ratio. Jackknife-over-briefs 95% CIs.
+     judge         quantity estimate se_jackknife ci_lo ci_hi
+    openai         label_sd    0.067        0.005 0.057 0.076
+    openai       between_sd    0.530        0.034 0.461 0.599
+    openai label_to_between    0.126        0.011 0.103 0.149
+ anthropic         label_sd    0.149        0.019 0.110 0.189
+ anthropic       between_sd    0.505        0.077 0.348 0.662
+ anthropic label_to_between    0.296        0.024 0.247 0.344
+    google         label_sd    0.105        0.006 0.093 0.118
+    google       between_sd    0.254        0.030 0.194 0.315
+    google label_to_between    0.415        0.045 0.322 0.507
+
+Largest minus smallest label mean per document (descriptive; noise inflates it slightly):
+           openai anthropic google
+median_gap  0.150     0.329  0.258
+p90_gap     0.283     0.601  0.497
+max_gap     0.492     1.833  0.792
+
+================ Q3 PERSISTENCE (confirmatory) ================
+Split of the within-document label variance into persistent and document-specific parts:
+     judge         quantity estimate se_jackknife ci_lo ci_hi
+    openai    persistent_sd    0.053        0.003 0.047 0.059
+    openai      specific_sd    0.041        0.004 0.032 0.049
+    openai persistent_share    0.631        0.033 0.564 0.699
+ anthropic    persistent_sd    0.061        0.008 0.045 0.077
+ anthropic      specific_sd    0.136        0.019 0.097 0.175
+ anthropic persistent_share    0.166        0.038 0.088 0.245
+    google    persistent_sd    0.083        0.005 0.073 0.093
+    google      specific_sd    0.065        0.005 0.054 0.075
+    google persistent_share    0.623        0.031 0.560 0.687
+
+Joint test that all 7 label effects (vs neutral) are zero on average:
+                                          test     judge n_briefs      T2
+ Q3 any persistent label effect (Hotelling T2)    openai       30 337.632
+ Q3 any persistent label effect (Hotelling T2) anthropic       30  82.400
+ Q3 any persistent label effect (Hotelling T2)    google       30 411.877
+      F df1 df2    p_raw   p_holm
+ 38.254   7  23 3.38e-11 6.77e-11
+  9.336   7  23 1.84e-05 1.84e-05
+ 46.666   7  23 4.20e-12 1.26e-11
+
+Persistent effect of each label vs neutral (mean over briefs; estimates, no test):
+     judge     label estimate    se  ci_lo  ci_hi positive_briefs
+    openai        v2   -0.028 0.006 -0.041 -0.015               6
+    openai    Sergey    0.011 0.006 -0.001  0.023              17
+    openai Catherine    0.031 0.005  0.020  0.042              25
+    openai      Chen    0.017 0.007  0.004  0.031              18
+    openai   ChatGPT   -0.087 0.008 -0.104 -0.070               0
+    openai    Claude   -0.096 0.008 -0.113 -0.080               0
+    openai    Gemini   -0.091 0.008 -0.107 -0.075               0
+ anthropic        v2   -0.026 0.024 -0.074  0.022              14
+ anthropic    Sergey    0.059 0.028  0.001  0.117              20
+ anthropic Catherine    0.070 0.028  0.013  0.127              21
+ anthropic      Chen    0.083 0.029  0.025  0.141              24
+ anthropic   ChatGPT   -0.098 0.023 -0.145 -0.052               3
+ anthropic    Claude   -0.047 0.022 -0.091 -0.003              10
+ anthropic    Gemini   -0.002 0.023 -0.049  0.045              17
+    google        v2   -0.011 0.008 -0.028  0.005              12
+    google    Sergey    0.000 0.007 -0.014  0.015              11
+    google Catherine    0.014 0.008 -0.003  0.031              16
+    google      Chen    0.010 0.009 -0.008  0.029              15
+    google   ChatGPT   -0.233 0.013 -0.259 -0.207               0
+    google    Claude   -0.088 0.010 -0.108 -0.068               0
+    google    Gemini   -0.037 0.012 -0.061 -0.013               9
+ negative_briefs
+              24
+              13
+               5
+              11
+              30
+              30
+              30
+              16
+              10
+               9
+               6
+              27
+              20
+              13
+              15
+              17
+              14
+              14
+              30
+              30
+              21
+
+Named persistent biases (brief = unit, df = 29; Holm across judges; H5 pooled row secondary):
+                           test     judge n_briefs estimate    se sd_briefs
+            H5 self-recognition    openai       30    0.338 0.049     0.266
+            H5 self-recognition anthropic       30   -0.281 0.068     0.371
+            H5 self-recognition    google       30    0.551 0.083     0.454
+       H6 own label on own text    openai       30    0.018 0.006     0.035
+       H6 own label on own text anthropic       30    0.019 0.024     0.130
+       H6 own label on own text    google       30    0.157 0.022     0.122
+ H7 AI labels minus human names    openai       30   -0.111 0.007     0.036
+ H7 AI labels minus human names anthropic       30   -0.120 0.018     0.100
+ H7 AI labels minus human names    google       30   -0.127 0.010     0.053
+            H5 self-recognition    pooled       30    0.203 0.029     0.156
+       t df    p_raw  ci_lo  ci_hi mde80 positive_briefs negative_briefs
+   6.945 29 1.24e-07  0.238  0.437 0.165              29               1
+  -4.145 29 2.69e-04 -0.419 -0.142 0.230               5              25
+   6.649 29 2.73e-07  0.382  0.721 0.281              30               0
+   2.855 29 7.86e-03  0.005  0.032 0.022              20              10
+   0.789 29 4.36e-01 -0.030  0.067 0.081              13              16
+   7.046 29 9.47e-08  0.112  0.203 0.076              28               2
+ -16.714 29 2.00e-16 -0.125 -0.098 0.023               0              30
+  -6.552 29 3.54e-07 -0.157 -0.082 0.062               4              26
+ -13.167 29 9.19e-14 -0.147 -0.108 0.033               0              30
+   7.104 29 8.12e-08  0.144  0.261 0.097              27               3
+   p_holm
+ 3.72e-07
+ 2.69e-04
+ 5.46e-07
+ 1.57e-02
+ 4.36e-01
+ 2.84e-07
+ 5.99e-16
+ 3.54e-07
+ 1.84e-13
+       NA
+
+================ ROBUSTNESS for H5-H7 (preregistered, not confirmatory) ================
+                check          test     judge estimate    se  df     p_raw
+         a: OLS + CR2            H6    openai    0.018 0.006  29  7.86e-03
+         a: OLS + CR2            H7    openai   -0.111 0.007  29  2.00e-16
+         a: OLS + CR2            H6 anthropic    0.019 0.024  29  4.36e-01
+         a: OLS + CR2            H7 anthropic   -0.120 0.018  29  3.54e-07
+         a: OLS + CR2            H6    google    0.157 0.022  29  9.47e-08
+         a: OLS + CR2            H7    google   -0.128 0.010  29  9.19e-14
+         a: OLS + CR2            H5    openai    0.338 0.049  29  1.24e-07
+         a: OLS + CR2            H5 anthropic   -0.281 0.068  29  2.69e-04
+         a: OLS + CR2            H5    google    0.551 0.083  29  2.73e-07
+       b: mixed model            H6    openai    0.018 0.008 Inf  1.80e-02
+       b: mixed model            H7    openai   -0.111 0.004 Inf 1.34e-160
+       b: mixed model            H6 anthropic    0.019 0.027 Inf  4.91e-01
+       b: mixed model            H7 anthropic   -0.120 0.012 Inf  1.01e-21
+       b: mixed model            H6    google    0.157 0.020 Inf  6.05e-15
+       b: mixed model            H7    google   -0.127 0.006 Inf  7.63e-93
+       b: mixed model            H5    openai    0.338 0.016 Inf 3.76e-104
+       b: mixed model            H5 anthropic   -0.281 0.016 Inf  1.93e-72
+       b: mixed model            H5    google    0.551 0.016 Inf 7.11e-274
+ c: last-number score            H5    openai    0.338 0.049  29  1.24e-07
+ c: last-number score            H5 anthropic   -0.281 0.068  29  2.69e-04
+ c: last-number score            H5    google    0.551 0.083  29  2.73e-07
+ c: last-number score            H6    openai    0.018 0.006  29  7.86e-03
+ c: last-number score            H6 anthropic    0.019 0.024  29  4.36e-01
+ c: last-number score            H6    google    0.157 0.022  29  9.47e-08
+ c: last-number score            H7    openai   -0.111 0.007  29  2.00e-16
+ c: last-number score            H7 anthropic   -0.120 0.018  29  3.54e-07
+ c: last-number score            H7    google   -0.127 0.010  29  9.19e-14
+ d: neutral reference H6 vs neutral    openai   -0.066 0.008  29  1.11e-08
+ d: neutral reference H6 vs neutral anthropic    0.005 0.030  29  8.62e-01
+ d: neutral reference H6 vs neutral    google   -0.079 0.022  29  9.48e-04
+ d: neutral reference H7 vs neutral    openai   -0.091 0.007  29  3.94e-13
+ d: neutral reference H7 vs neutral anthropic   -0.049 0.020  29  1.89e-02
+ d: neutral reference H7 vs neutral    google   -0.119 0.010  29  5.70e-13
+ note    p_holm
+       1.57e-02
+       5.99e-16
+       4.36e-01
+       3.54e-07
+       2.84e-07
+       1.84e-13
+       3.72e-07
+       2.69e-04
+       5.46e-07
+       3.61e-02
+      4.02e-160
+       4.91e-01
+       1.01e-21
+       1.81e-14
+       1.53e-92
+      7.53e-104
+       1.93e-72
+      2.13e-273
+       3.72e-07
+       2.69e-04
+       5.46e-07
+       1.57e-02
+       4.36e-01
+       2.84e-07
+       5.99e-16
+       3.54e-07
+       1.84e-13
+       3.32e-08
+       8.62e-01
+       1.90e-03
+       1.18e-12
+       1.89e-02
+       1.18e-12
+
+================ EXPLORATORY (not tests of the preregistration; no correction) ================
+                            test     judge estimate    se    p_raw
+        Placebo v2 minus neutral    openai   -0.028 0.006 1.05e-04
+        Placebo v2 minus neutral anthropic   -0.026 0.024 2.76e-01
+        Placebo v2 minus neutral    google   -0.011 0.008 1.73e-01
+       Human names minus neutral    openai    0.020 0.005 3.36e-04
+       Human names minus neutral anthropic    0.071 0.027 1.32e-02
+       Human names minus neutral    google    0.008 0.006 2.23e-01
+    Human names minus placebo v2    openai    0.048 0.005 5.31e-10
+    Human names minus placebo v2 anthropic    0.097 0.017 3.10e-06
+    Human names minus placebo v2    google    0.019 0.008 1.86e-02
+          Catherine minus Sergey    openai    0.020 0.006 2.22e-03
+          Catherine minus Sergey anthropic    0.011 0.013 4.15e-01
+          Catherine minus Sergey    google    0.013 0.008 1.08e-01
+ Chen minus Sergey and Catherine    openai   -0.004 0.005 5.01e-01
+ Chen minus Sergey and Catherine anthropic    0.019 0.015 2.32e-01
+ Chen minus Sergey and Catherine    google    0.003 0.008 6.99e-01
+                True-label match    openai    0.005 0.004 2.40e-01
+                True-label match anthropic    0.013 0.016 4.07e-01
+                True-label match    google    0.009 0.011 4.23e-01
+    H6 own text minus rival text    openai    0.017 0.009 5.22e-02
+    H6 own text minus rival text anthropic    0.023 0.028 4.14e-01
+    H6 own text minus rival text    google    0.050 0.024 4.17e-02
+ positive_briefs negative_briefs
+               6              24
+              14              16
+              12              15
+              23               7
+              22               8
+              16              13
+              29               1
+              25               5
+              19              11
+              23               7
+              19              11
+              18              12
+              11              19
+              17              13
+              14              16
+              17              13
+              20              10
+              16              14
+              19              11
+              15              15
+              17              13
+
+Mean per-brief contrast by genre:
+ test     judge                  genre contrast
+   H5 anthropic   Academic or teaching   -0.147
+   H6 anthropic   Academic or teaching    0.005
+   H7 anthropic   Academic or teaching   -0.083
+   H5    google   Academic or teaching    0.516
+   H6    google   Academic or teaching    0.103
+   H7    google   Academic or teaching   -0.098
+   H5    openai   Academic or teaching    0.360
+   H6    openai   Academic or teaching    0.012
+   H7    openai   Academic or teaching   -0.095
+   H5 anthropic General-audience essay   -0.375
+   H6 anthropic General-audience essay    0.023
+   H7 anthropic General-audience essay   -0.104
+   H5    google General-audience essay    0.480
+   H6    google General-audience essay    0.188
+   H7    google General-audience essay   -0.125
+   H5    openai General-audience essay    0.410
+   H6    openai General-audience essay    0.027
+   H7    openai General-audience essay   -0.108
+   H5 anthropic    Report or narrative   -0.320
+   H6 anthropic    Report or narrative    0.029
+   H7 anthropic    Report or narrative   -0.172
+   H5    google    Report or narrative    0.658
+   H6    google    Report or narrative    0.180
+   H7    google    Report or narrative   -0.159
+   H5    openai    Report or narrative    0.243
+   H6    openai    Report or narrative    0.016
+   H7    openai    Report or narrative   -0.130
+
+Length (per 100 words) vs H7 contrast and vs within-document label spread:
+     judge h7_slope_per_100w  h7_p label_spread_slope_per_100w spread_p
+    openai             0.022 0.415                      -0.010    0.447
+ anthropic            -0.034 0.608                       0.014    0.672
+    google             0.065 0.074                      -0.039    0.039
+
+Scale use by judge:
+     judge min q05 median q95 max distinct_values top3_share
+    openai 6.3 7.4    8.5 9.1 9.3              30      0.329
+ anthropic 3.5 7.4    8.2 8.7 9.2              30      0.488
+    google 7.2 8.5    9.2 9.5 9.8              22      0.653
+
+Valid replies by judge and label (%):
+          Neutral  v2 Sergey Catherine Chen ChatGPT Claude Gemini
+anthropic     100 100    100       100  100     100    100    100
+google        100 100    100       100  100     100    100    100
+openai        100 100    100       100  100     100    100    100
+
+Outputs written to analysis_output_study2 

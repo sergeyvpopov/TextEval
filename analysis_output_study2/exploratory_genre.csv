@@ -1,0 +1,28 @@
+"test","judge","genre","contrast"
+"H5","anthropic","Academic or teaching",-0.146666666666668
+"H6","anthropic","Academic or teaching",0.00458333333333307
+"H7","anthropic","Academic or teaching",-0.0826851851851852
+"H5","google","Academic or teaching",0.515833333333333
+"H6","google","Academic or teaching",0.103333333333333
+"H7","google","Academic or teaching",-0.0980555555555554
+"H5","openai","Academic or teaching",0.359999999999997
+"H6","openai","Academic or teaching",0.0120833333333332
+"H7","openai","Academic or teaching",-0.0948148148148147
+"H5","anthropic","General-audience essay",-0.375416666666671
+"H6","anthropic","General-audience essay",0.0229166666666666
+"H7","anthropic","General-audience essay",-0.104166666666667
+"H5","google","General-audience essay",0.479583333333334
+"H6","google","General-audience essay",0.187916666666667
+"H7","google","General-audience essay",-0.125277777777778
+"H5","openai","General-audience essay",0.410416666666664
+"H6","openai","General-audience essay",0.0270833333333332
+"H7","openai","General-audience essay",-0.10824074074074
+"H5","anthropic","Report or narrative",-0.319583333333336
+"H6","anthropic","Report or narrative",0.0287499999999997
+"H7","anthropic","Report or narrative",-0.171851851851852
+"H5","google","Report or narrative",0.657916666666666
+"H6","google","Report or narrative",0.180416666666667
+"H7","google","Report or narrative",-0.159166666666667
+"H5","openai","Report or narrative",0.242916666666664
+"H6","openai","Report or narrative",0.01625
+"H7","openai","Report or narrative",-0.130370370370371

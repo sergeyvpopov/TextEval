@@ -1,0 +1,4 @@
+"test","judge","n_briefs","T2","F","df1","df2","p_raw","p_holm"
+"Q3 any persistent label effect (Hotelling T2)","openai",30,337.632341265022,38.2539105866774,7,23,3.38479220526359e-11,6.76958441052719e-11
+"Q3 any persistent label effect (Hotelling T2)","anthropic",30,82.3998665566474,9.33594547193542,7,23,1.83774989236069e-05,1.83774989236069e-05
+"Q3 any persistent label effect (Hotelling T2)","google",30,411.876717943155,46.6658350378944,7,23,4.19549770644012e-12,1.25864931193204e-11

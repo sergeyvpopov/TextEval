@@ -1,0 +1,4 @@
+"test","judge","between_label_ss","perm_mean_ss","p_raw","docs_significant_bh05","n_docs","p_holm"
+"Q1 labels change scores within documents","openai",38.499375,7.28150709308527,2e-04,NA,90,6e-04
+"Q1 labels change scores within documents","anthropic",181.838958333333,25.748949331533,2e-04,NA,90,6e-04
+"Q1 labels change scores within documents","google",93.1797916666666,15.3106391695006,2e-04,NA,90,6e-04

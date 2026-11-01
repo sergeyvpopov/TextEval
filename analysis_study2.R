@@ -173,12 +173,18 @@ q1 <- do.call(rbind, lapply(fams, function(j) {
     pl <- lab; for (g in groups) pl[g] <- lab[g][sample.int(length(g))]
     between_ss(y, cellid(pl), n_cells)
   }, 0)
-  # Descriptive: per-document Welch tests, Benjamini-Hochberg within judge
-  pd <- vapply(groups, function(g) oneway.test(y[g] ~ factor(lab[g]))$p.value, 0)
+  # Descriptive: per-document one-way F tests, Benjamini-Hochberg within judge.
+  # (Welch's version returns NaN whenever one label's scores are all identical,
+  # which happens near a judge's ceiling and made the count NA; deviation from the
+  # Welch wording of the registered descriptive, which affects no confirmatory result.)
+  pd <- vapply(groups, function(g) tryCatch(
+    oneway.test(y[g] ~ factor(lab[g]), var.equal = TRUE)$p.value,
+    error = function(e) NA_real_), 0)
   data.frame(test = "Q1 labels change scores within documents", judge = j,
              between_label_ss = obs, perm_mean_ss = mean(perm),
              p_raw = (1 + sum(perm >= obs)) / (1 + opt2$n_perm),
-             docs_significant_bh05 = sum(p.adjust(pd, "BH") < 0.05), n_docs = length(groups))
+             docs_significant_bh05 = sum(p.adjust(pd, "BH") < 0.05, na.rm = TRUE),
+             docs_test_undefined = sum(is.na(pd)), n_docs = length(groups))
 }))
 q1$p_holm <- p.adjust(q1$p_raw, "holm")
 print(fmt(q1), row.names = FALSE)

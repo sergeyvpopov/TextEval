@@ -1,0 +1,126 @@
+%% paperstyle.sty
+%% Preamble extracted from main.tex, packaged as a reusable style file.
+%% Usage:  \documentclass[12pt]{article}
+%%         \usepackage{paperstyle}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{paperstyle}[2026/09/17 Shared paper preamble]
+
+% ---------------------------------------------------------------
+% Fonts and encoding
+% ---------------------------------------------------------------
+\RequirePackage[T1]{fontenc}
+\RequirePackage{tgpagella}
+
+% ---------------------------------------------------------------
+% Page layout and spacing
+% ---------------------------------------------------------------
+\RequirePackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\RequirePackage{setspace}
+\linespread{1.3}
+\setcounter{secnumdepth}{0}
+
+% ---------------------------------------------------------------
+% Bibliography
+% ---------------------------------------------------------------
+\RequirePackage[round,sort,comma,authoryear]{natbib}
+\setlength{\bibsep}{0.0pt}
+
+% ---------------------------------------------------------------
+% Mathematics
+% ---------------------------------------------------------------
+\RequirePackage{amssymb,amsmath,amsthm,mathtools}
+\RequirePackage{units}
+\RequirePackage{nicefrac}
+\RequirePackage{cancel}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% ---------------------------------------------------------------
+% Figures, tables, graphics
+% ---------------------------------------------------------------
+\RequirePackage{graphicx}
+\RequirePackage{subcaption}
+\RequirePackage{array}
+\RequirePackage{multirow}
+\RequirePackage{color}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows,positioning,trees,backgrounds,calc,%
+  decorations.markings,decorations.pathreplacing,patterns}
+
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+% ---------------------------------------------------------------
+% Miscellaneous
+% ---------------------------------------------------------------
+\RequirePackage{epigraph}
+
+% ---------------------------------------------------------------
+% Theorem-like environments
+% ---------------------------------------------------------------
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{prob}{Problem}
+\newtheorem{fact}{Fact}
+\newtheorem{claim}{Claim}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newtheorem{result}{Result}
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+
+% Restated results: e.g. \reflma{lem:foo}\begin{rlma}...\end{rlma}
+% prints "Lemma <number of lem:foo>" (useful in appendices).
+\newtheorem{rlma}{Lemma}
+\newtheorem{rthrm}{Theorem}
+\newtheorem{rprop}{Proposition}
+\newtheorem{rcor}{Corollary}
+\newcommand{\reflma}[1]{\renewcommand{\therlma}{\ref{#1}}}
+\newcommand{\refthrm}[1]{\renewcommand{\therthrm}{\ref{#1}}}
+\newcommand{\refprop}[1]{\renewcommand{\therprop}{\ref{#1}}}
+\newcommand{\refcor}[1]{\renewcommand{\thercor}{\ref{#1}}}
+
+% ---------------------------------------------------------------
+% Shorthand macros
+% ---------------------------------------------------------------
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\veps}{\varepsilon}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\RR}{\mathcal{R}}
+\newcommand{\Real}{\mathbb R}
+\newcommand{\I}{\mathbb I}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\FF}{\mathfrak{F}}
+\newcommand{\To}{\longrightarrow}
+\newcommand{\BX}{\mathbf{B}(X)}
+\newcommand{\norm}[1]{\left\Vert#1\right\Vert}
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\yl}{\underline{y}}
+\newcommand{\yu}{\overline{y}}
+\newcommand{\ql}{\underline{q}}
+\newcommand{\qu}{\overline{q}}
+\newcommand{\cl}{\underline{c}}
+\newcommand{\cu}{\overline{c}}
+\newcommand{\ph}{\hat{p}}
+\newcommand{\pt}{\tilde{p}}
+\newcommand{\piu}{\overline{\pi}}
+\newcommand{\Fl}{\underline{F}}
+\newcommand{\Fu}{\overline{F}}
+\newcommand{\gl}{\underline{g}}
+\newcommand{\zl}{\underline{z}}
+
+% ---------------------------------------------------------------
+% Cross-referencing (hyperref and cleveref must come last)
+% ---------------------------------------------------------------
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage{cleveref}
+
+\endinput

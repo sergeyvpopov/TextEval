@@ -1,4 +1,4 @@
-Study 2 analysis run: 2026-10-30 21:56:45 
+Study 2 analysis run: 2026-10-31 13:38:03 
 
 ================ DATA ================
 Rows in calls files: 25920 | usable records: 25920 
@@ -12,10 +12,14 @@ Permutation test, labels shuffled within each document, 4999 draws.
  Q1 labels change scores within documents    openai           38.499
  Q1 labels change scores within documents anthropic          181.839
  Q1 labels change scores within documents    google           93.180
- perm_mean_ss p_raw docs_significant_bh05 n_docs p_holm
-        7.282 2e-04                    NA     90  6e-04
-       25.749 2e-04                    NA     90  6e-04
-       15.311 2e-04                    NA     90  6e-04
+ perm_mean_ss p_raw docs_significant_bh05 docs_test_undefined n_docs
+        7.282 2e-04                    84                   0     90
+       25.749 2e-04                    87                   0     90
+       15.311 2e-04                    89                   0     90
+ p_holm
+  6e-04
+  6e-04
+  6e-04
 
 ================ Q2 SIZE (confirmatory estimates; points on the 0-10 scale) ================
 label_sd: SD of label effects within a document; between_sd: SD of document means;
@@ -51,14 +55,14 @@ Split of the within-document label variance into persistent and document-specifi
     google persistent_share    0.623        0.031 0.560 0.687
 
 Joint test that all 7 label effects (vs neutral) are zero on average:
-                                          test     judge n_briefs      T2
- Q3 any persistent label effect (Hotelling T2)    openai       30 337.632
- Q3 any persistent label effect (Hotelling T2) anthropic       30  82.400
- Q3 any persistent label effect (Hotelling T2)    google       30 411.877
-      F df1 df2    p_raw   p_holm
- 38.254   7  23 3.38e-11 6.77e-11
-  9.336   7  23 1.84e-05 1.84e-05
- 46.666   7  23 4.20e-12 1.26e-11
+                                          test     judge n_briefs
+ Q3 any persistent label effect (Hotelling T2)    openai       30
+ Q3 any persistent label effect (Hotelling T2) anthropic       30
+ Q3 any persistent label effect (Hotelling T2)    google       30
+      T2      F df1 df2    p_raw   p_holm
+ 337.632 38.254   7  23 3.38e-11 6.77e-11
+  82.400  9.336   7  23 1.84e-05 1.84e-05
+ 411.877 46.666   7  23 4.20e-12 1.26e-11
 
 Persistent effect of each label vs neutral (mean over briefs; estimates, no test):
      judge     label estimate    se  ci_lo  ci_hi positive_briefs
@@ -107,109 +111,109 @@ Persistent effect of each label vs neutral (mean over briefs; estimates, no test
               21
 
 Named persistent biases (brief = unit, df = 29; Holm across judges; H5 pooled row secondary):
-                           test     judge n_briefs estimate    se sd_briefs
-            H5 self-recognition    openai       30    0.338 0.049     0.266
-            H5 self-recognition anthropic       30   -0.281 0.068     0.371
-            H5 self-recognition    google       30    0.551 0.083     0.454
-       H6 own label on own text    openai       30    0.018 0.006     0.035
-       H6 own label on own text anthropic       30    0.019 0.024     0.130
-       H6 own label on own text    google       30    0.157 0.022     0.122
- H7 AI labels minus human names    openai       30   -0.111 0.007     0.036
- H7 AI labels minus human names anthropic       30   -0.120 0.018     0.100
- H7 AI labels minus human names    google       30   -0.127 0.010     0.053
-            H5 self-recognition    pooled       30    0.203 0.029     0.156
-       t df    p_raw  ci_lo  ci_hi mde80 positive_briefs negative_briefs
-   6.945 29 1.24e-07  0.238  0.437 0.165              29               1
-  -4.145 29 2.69e-04 -0.419 -0.142 0.230               5              25
-   6.649 29 2.73e-07  0.382  0.721 0.281              30               0
-   2.855 29 7.86e-03  0.005  0.032 0.022              20              10
-   0.789 29 4.36e-01 -0.030  0.067 0.081              13              16
-   7.046 29 9.47e-08  0.112  0.203 0.076              28               2
- -16.714 29 2.00e-16 -0.125 -0.098 0.023               0              30
-  -6.552 29 3.54e-07 -0.157 -0.082 0.062               4              26
- -13.167 29 9.19e-14 -0.147 -0.108 0.033               0              30
-   7.104 29 8.12e-08  0.144  0.261 0.097              27               3
-   p_holm
- 3.72e-07
- 2.69e-04
- 5.46e-07
- 1.57e-02
- 4.36e-01
- 2.84e-07
- 5.99e-16
- 3.54e-07
- 1.84e-13
-       NA
+                           test     judge n_briefs estimate    se
+            H5 self-recognition    openai       30    0.338 0.049
+            H5 self-recognition anthropic       30   -0.281 0.068
+            H5 self-recognition    google       30    0.551 0.083
+       H6 own label on own text    openai       30    0.018 0.006
+       H6 own label on own text anthropic       30    0.019 0.024
+       H6 own label on own text    google       30    0.157 0.022
+ H7 AI labels minus human names    openai       30   -0.111 0.007
+ H7 AI labels minus human names anthropic       30   -0.120 0.018
+ H7 AI labels minus human names    google       30   -0.127 0.010
+            H5 self-recognition    pooled       30    0.203 0.029
+ sd_briefs       t df    p_raw  ci_lo  ci_hi mde80 positive_briefs
+     0.266   6.945 29 1.24e-07  0.238  0.437 0.165              29
+     0.371  -4.145 29 2.69e-04 -0.419 -0.142 0.230               5
+     0.454   6.649 29 2.73e-07  0.382  0.721 0.281              30
+     0.035   2.855 29 7.86e-03  0.005  0.032 0.022              20
+     0.130   0.789 29 4.36e-01 -0.030  0.067 0.081              13
+     0.122   7.046 29 9.47e-08  0.112  0.203 0.076              28
+     0.036 -16.714 29 2.00e-16 -0.125 -0.098 0.023               0
+     0.100  -6.552 29 3.54e-07 -0.157 -0.082 0.062               4
+     0.053 -13.167 29 9.19e-14 -0.147 -0.108 0.033               0
+     0.156   7.104 29 8.12e-08  0.144  0.261 0.097              27
+ negative_briefs   p_holm
+               1 3.72e-07
+              25 2.69e-04
+               0 5.46e-07
+              10 1.57e-02
+              16 4.36e-01
+               2 2.84e-07
+              30 5.99e-16
+              26 3.54e-07
+              30 1.84e-13
+               3       NA
 
 ================ ROBUSTNESS for H5-H7 (preregistered, not confirmatory) ================
-                check          test     judge estimate    se  df     p_raw
-         a: OLS + CR2            H6    openai    0.018 0.006  29  7.86e-03
-         a: OLS + CR2            H7    openai   -0.111 0.007  29  2.00e-16
-         a: OLS + CR2            H6 anthropic    0.019 0.024  29  4.36e-01
-         a: OLS + CR2            H7 anthropic   -0.120 0.018  29  3.54e-07
-         a: OLS + CR2            H6    google    0.157 0.022  29  9.47e-08
-         a: OLS + CR2            H7    google   -0.128 0.010  29  9.19e-14
-         a: OLS + CR2            H5    openai    0.338 0.049  29  1.24e-07
-         a: OLS + CR2            H5 anthropic   -0.281 0.068  29  2.69e-04
-         a: OLS + CR2            H5    google    0.551 0.083  29  2.73e-07
-       b: mixed model            H6    openai    0.018 0.008 Inf  1.80e-02
-       b: mixed model            H7    openai   -0.111 0.004 Inf 1.34e-160
-       b: mixed model            H6 anthropic    0.019 0.027 Inf  4.91e-01
-       b: mixed model            H7 anthropic   -0.120 0.012 Inf  1.01e-21
-       b: mixed model            H6    google    0.157 0.020 Inf  6.05e-15
-       b: mixed model            H7    google   -0.127 0.006 Inf  7.63e-93
-       b: mixed model            H5    openai    0.338 0.016 Inf 3.76e-104
-       b: mixed model            H5 anthropic   -0.281 0.016 Inf  1.93e-72
-       b: mixed model            H5    google    0.551 0.016 Inf 7.11e-274
- c: last-number score            H5    openai    0.338 0.049  29  1.24e-07
- c: last-number score            H5 anthropic   -0.281 0.068  29  2.69e-04
- c: last-number score            H5    google    0.551 0.083  29  2.73e-07
- c: last-number score            H6    openai    0.018 0.006  29  7.86e-03
- c: last-number score            H6 anthropic    0.019 0.024  29  4.36e-01
- c: last-number score            H6    google    0.157 0.022  29  9.47e-08
- c: last-number score            H7    openai   -0.111 0.007  29  2.00e-16
- c: last-number score            H7 anthropic   -0.120 0.018  29  3.54e-07
- c: last-number score            H7    google   -0.127 0.010  29  9.19e-14
- d: neutral reference H6 vs neutral    openai   -0.066 0.008  29  1.11e-08
- d: neutral reference H6 vs neutral anthropic    0.005 0.030  29  8.62e-01
- d: neutral reference H6 vs neutral    google   -0.079 0.022  29  9.48e-04
- d: neutral reference H7 vs neutral    openai   -0.091 0.007  29  3.94e-13
- d: neutral reference H7 vs neutral anthropic   -0.049 0.020  29  1.89e-02
- d: neutral reference H7 vs neutral    google   -0.119 0.010  29  5.70e-13
- note    p_holm
-       1.57e-02
-       5.99e-16
-       4.36e-01
-       3.54e-07
-       2.84e-07
-       1.84e-13
-       3.72e-07
-       2.69e-04
-       5.46e-07
-       3.61e-02
-      4.02e-160
-       4.91e-01
-       1.01e-21
-       1.81e-14
-       1.53e-92
-      7.53e-104
-       1.93e-72
-      2.13e-273
-       3.72e-07
-       2.69e-04
-       5.46e-07
-       1.57e-02
-       4.36e-01
-       2.84e-07
-       5.99e-16
-       3.54e-07
-       1.84e-13
-       3.32e-08
-       8.62e-01
-       1.90e-03
-       1.18e-12
-       1.89e-02
-       1.18e-12
+                check          test     judge estimate    se  df
+         a: OLS + CR2            H6    openai    0.018 0.006  29
+         a: OLS + CR2            H7    openai   -0.111 0.007  29
+         a: OLS + CR2            H6 anthropic    0.019 0.024  29
+         a: OLS + CR2            H7 anthropic   -0.120 0.018  29
+         a: OLS + CR2            H6    google    0.157 0.022  29
+         a: OLS + CR2            H7    google   -0.128 0.010  29
+         a: OLS + CR2            H5    openai    0.338 0.049  29
+         a: OLS + CR2            H5 anthropic   -0.281 0.068  29
+         a: OLS + CR2            H5    google    0.551 0.083  29
+       b: mixed model            H6    openai    0.018 0.008 Inf
+       b: mixed model            H7    openai   -0.111 0.004 Inf
+       b: mixed model            H6 anthropic    0.019 0.027 Inf
+       b: mixed model            H7 anthropic   -0.120 0.012 Inf
+       b: mixed model            H6    google    0.157 0.020 Inf
+       b: mixed model            H7    google   -0.127 0.006 Inf
+       b: mixed model            H5    openai    0.338 0.016 Inf
+       b: mixed model            H5 anthropic   -0.281 0.016 Inf
+       b: mixed model            H5    google    0.551 0.016 Inf
+ c: last-number score            H5    openai    0.338 0.049  29
+ c: last-number score            H5 anthropic   -0.281 0.068  29
+ c: last-number score            H5    google    0.551 0.083  29
+ c: last-number score            H6    openai    0.018 0.006  29
+ c: last-number score            H6 anthropic    0.019 0.024  29
+ c: last-number score            H6    google    0.157 0.022  29
+ c: last-number score            H7    openai   -0.111 0.007  29
+ c: last-number score            H7 anthropic   -0.120 0.018  29
+ c: last-number score            H7    google   -0.127 0.010  29
+ d: neutral reference H6 vs neutral    openai   -0.066 0.008  29
+ d: neutral reference H6 vs neutral anthropic    0.005 0.030  29
+ d: neutral reference H6 vs neutral    google   -0.079 0.022  29
+ d: neutral reference H7 vs neutral    openai   -0.091 0.007  29
+ d: neutral reference H7 vs neutral anthropic   -0.049 0.020  29
+ d: neutral reference H7 vs neutral    google   -0.119 0.010  29
+     p_raw note    p_holm
+  7.86e-03       1.57e-02
+  2.00e-16       5.99e-16
+  4.36e-01       4.36e-01
+  3.54e-07       3.54e-07
+  9.47e-08       2.84e-07
+  9.19e-14       1.84e-13
+  1.24e-07       3.72e-07
+  2.69e-04       2.69e-04
+  2.73e-07       5.46e-07
+  1.80e-02       3.61e-02
+ 1.34e-160      4.02e-160
+  4.91e-01       4.91e-01
+  1.01e-21       1.01e-21
+  6.05e-15       1.81e-14
+  7.63e-93       1.53e-92
+ 3.76e-104      7.53e-104
+  1.93e-72       1.93e-72
+ 7.11e-274      2.13e-273
+  1.24e-07       3.72e-07
+  2.69e-04       2.69e-04
+  2.73e-07       5.46e-07
+  7.86e-03       1.57e-02
+  4.36e-01       4.36e-01
+  9.47e-08       2.84e-07
+  2.00e-16       5.99e-16
+  3.54e-07       3.54e-07
+  9.19e-14       1.84e-13
+  1.11e-08       3.32e-08
+  8.62e-01       8.62e-01
+  9.48e-04       1.90e-03
+  3.94e-13       1.18e-12
+  1.89e-02       1.89e-02
+  5.70e-13       1.18e-12
 
 ================ EXPLORATORY (not tests of the preregistration; no correction) ================
                             test     judge estimate    se    p_raw

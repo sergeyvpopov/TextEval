@@ -3,13 +3,14 @@
 Code, data and analysis for two experiments on whether large language models change their quality scores for a text depending on a label attached to it.
 
 - **Study 1** (complete): four human-written documents, scored under six labels that differ only in the file name.
-- **Study 2** (preregistration pending): 90 LLM-written documents, scored under eight labels, asking whether label effects exist, how large they are, and whether they persist across documents.
+- **Study 2** (complete; preregistered as AsPredicted #321045, 29 October 2026): 90 LLM-written documents, scored under eight labels, asking whether label effects exist, how large they are, and whether they persist across documents.
 
 **Author:** Sergey V. Popov (Cardiff University)
 **Study 1 preregistration:** AsPredicted [#320377](https://aspredicted.org/vp8ez6.pdf), which updates #314219 and #312192
-**Study 2 preregistration:** AsPredicted [#[number, added on registration]]
+**Study 2 preregistration:** AsPredicted [#321045](https://aspredicted.org/82v8c4.pdf), registered 29 October 2026, 15:59 PT
 **Study 1 data collection:** 27 October 2026, via OpenRouter
-**Status:** Study 1 collection and the registered analysis are complete; the paper is in preparation. Study 2 is designed and piloted but not yet registered or collected.
+**Study 2 data collection:** 29–30 October 2026, via OpenRouter; analysed 31 October 2026
+**Status:** Both studies are collected and analysed with the registered scripts. The paper (`paper.Rmd`, `paper.pdf`) is a first draft. Study 2 collection: 25,920 valid calls, 12 complete repetitions per judge, USD 47.66 (estimate USD 51, cap USD 60).
 
 ---
 
@@ -123,7 +124,9 @@ The supplement still describes the earlier design (five labels, 150 repetitions,
 
 ## Study 2: LLM-generated documents
 
-**Ethics:** Study 2 is covered by Cardiff Business School SREC approval #3355. The committee confirmed by email on [date of confirmation] that no further approval is needed.
+**Ethics:** Study 2 is covered by Cardiff Business School SREC approval #3355. The committee confirmed by email on 29 October 2026 that the approval extends to Study 2 and that no further approval is needed.
+
+**Preregistration and the pilot:** Study 2 was preregistered as #321045 on 29 October 2026. A pilot (one extra brief, two repetitions, 144 calls) was run before registration to check costs and reply parsing. Its scores are excluded from all analyses. Question 1 of #321045 refers to this pilot. The pilot cost about USD 0.28 and is recorded in its call logs in `results_study2_pilot/`.
 
 ### What the experiment asks
 
@@ -139,14 +142,15 @@ Study 1 used four human-written texts. Study 2 uses texts written by the judge m
 ### Design (Study 2)
 
 - **Briefs:** 30 writing prompts, 10 each in three genres (academic or teaching material, general-audience essays, reports or narratives).
+- **Brief changes before registration:** 31 briefs were frozen, then two changes were made, both logged in `generation_events.csv` on 29 October 2026 at 15:12 and 15:13 UTC, before registration (22:59 UTC) and before any scores were collected. `B14ChessAdOlder` was excluded because its chess topic repeats `B09Chess` and `B13ChessAd`, which gives the registered 30. `B12Biases` was recoded from general-audience essay to academic, because its texts were judged closer to academic than general. Its documents are the only ones whose genre differs from the briefs file.
 - **Generators:** each brief is written once by each of the three models, giving 90 documents. Generation settings and the regeneration rules are in `generate_documents.R` and the registration.
 - **Labels (8):** `Document.md` (neutral), `Document_v2.md` (placebo that names no source), `Document_from_Sergey.md`, `Document_from_Catherine.md`, `Document_from_Chen.md`, `Document_from_ChatGPT.md`, `Document_from_Claude.md`, `Document_from_Gemini.md`.
 - **Judges (3):** `openai/gpt-6.1-sol`, `anthropic/claude-sonnet-5.5`, `google/gemini-4-argon`, via OpenRouter.
 - **Repetitions:** 12 per document × label × judge, so 30 × 3 × 8 × 3 × 12 = **25,920 calls** (8,640 per judge). Judges are interleaved within each repetition, so a budget stop leaves all three with the same number of complete repetitions.
 - **Delivery:** as in Study 1, the label is an inline header, `[Attached file: <label>]`, above the text.
-- **Spending cap:** USD 60 (`budget_usd` in `main_study2.R`). The pilot projected about USD 51.
+- **Spending cap:** USD 60 (`budget_usd` in `main_study2.R`). The pilot projected about USD 51; the main run cost USD 47.66.
 
-The pilot (one extra brief, three documents, two repetitions, 144 calls, about USD 0.57) is excluded from all analyses and is not part of the design above.
+The pilot (one extra brief, three documents, two repetitions, 144 calls) is excluded from all analyses and is not part of the design above.
 
 ### Files (Study 2)
 
@@ -154,7 +158,9 @@ The pilot (one extra brief, three documents, two repetitions, 144 calls, about U
 |---|---|
 | `generate_documents.R` | Shiny app. Enter a brief; the same brief is sent to the three generators via OpenRouter. Applies the word-count rule, logs manual flags, freezes the texts with MD5 and SHA256 checksums, and logs abandoned briefs. Never overwrites a frozen file. |
 | `main_study2.R` | Data collection. Verifies every document against its frozen checksum before any call, fixes the schedule with seed 20261029, writes one calls file per judge, and stops at the spending cap. `run(pilot = TRUE)` and `estimate_cost()` run the pilot and project the main study's cost. |
-| `analysis_study2.R` | Analysis, organised by Q1, Q2 and Q3, with the named biases, robustness checks (a)–(d) and exploratory analyses. Reads `results_study2_main/`, writes to `analysis_output_study2/`. |
+| `analysis_study2.R` | Registered analysis, organised by Q1, Q2 and Q3, with the named biases, robustness checks (a)–(d) and exploratory analyses. Reads `results_study2_main/`, writes to `analysis_output_study2/`. |
+| `doc_level_bias.R` | Exploratory. Label effects for each judge × document × label, per-document significance, and a bridge check against the variance decomposition of `analysis_study2.R`. Writes `doc_judge_label_effects.csv` and `doc_judge_summary.csv`. |
+| `SUPPLEMENT.md` | Study 2 supplement: briefs, document checksums, brief changes before registration, generation procedure, flagged texts, scoring, pilot, and how to verify the documents. |
 
 Outputs (created by the scripts, not all committed):
 
@@ -165,7 +171,13 @@ Outputs (created by the scripts, not all committed):
 | `results_study2/documents/` | The 90 generated texts. **Git-ignored by default**; see `DATA_USE.md`. |
 | `results_study2_pilot/` | Pilot calls. Kept as the audit trail; excluded from analysis. |
 | `results_study2_main/` | `schedule.csv`, `documents.csv`, `calls_<judge>.csv` and `raw_<judge>.jsonl`. |
-| `analysis_output_study2/` | Tables (`q1_existence.csv`, `q2_q3_variance_components.csv`, `q3_named_biases.csv`, `robustness.csv`, `exploratory_tests.csv`, and others), two figures and `analysis_log.txt`. |
+| `analysis_output_study2/` | Registered tables (`q1_existence.csv`, `q2_label_gaps.csv`, `q2_q3_variance_components.csv`, `q3_label_effects.csv`, `q3_hotelling.csv`, `q3_named_biases.csv`, `robustness.csv`, and others), exploratory tables (`exploratory_*.csv`, `per_brief_contrasts.csv`), the document-level tables from `doc_level_bias.R`, two figures and `analysis_log.txt`. |
+| `results_study2/excluded/` | Texts of the excluded brief B14. |
+
+### Deviations from the registration (Study 2)
+
+- **Per-document test.** #321045 describes a Welch one-way test of the eight labels within each document. Welch returns `NaN` when one label's 12 scores are identical, which happens near Gemini's ceiling, so the count of significant documents became `NA`. `analysis_study2.R` and `doc_level_bias.R` use the classic one-way F test, wrapped in `tryCatch`, and report the number of undefined tests (`docs_test_undefined`). This affects only the descriptive per-document count, not Q1 (permutation test), Q2 or Q3.
+- **Study 1 table.** `analysis.R` now keeps unrounded standard errors in `hypothesis_tests.csv`, so tables built from it do not double-round. No estimate changes.
 
 ### Reproducing Study 2
 
@@ -175,8 +187,25 @@ Outputs (created by the scripts, not all committed):
 4. `source("main_study2.R")`, then `run(pilot = TRUE)` and `estimate_cost()`.
 5. Register, then run `run()`. Collection resumes automatically if interrupted.
 6. `source("analysis_study2.R")`. The analysis refuses to run if any judge has fewer than 8 complete repetitions.
+7. Optionally `source("doc_level_bias.R")` for the document-level tables.
 
 Run the analysis from the project root. It needs `clubSandwich` for robustness check (a) and `lme4` for (b); both are optional and the script reports when a check is skipped.
+
+The analysis needs no API key and runs from the committed `results_study2_main/` alone; it does not read the document texts.
+
+---
+
+## The paper
+
+| Path | What it is |
+|---|---|
+| `paper.Rmd` | The paper. Tables and numbers in the text are computed from the data: it sources `analysis.R` for the Study 1 estimators, re-estimates Study 2 from `results_study2_main/`, and inlines results with `` `r ...` ``. |
+| `template.tex`, `popovstyle.sty`, `references.bib` | LaTeX template, style file and bibliography used by `paper.Rmd`. |
+| `paper.pdf` | Compiled output. |
+| `brief_key_glyphs/`, `paper_files/` | Generated by knitting (Russian-letter glyphs for the 90-text figure, and knitr figures). Safe to delete; they are recreated. |
+| `table_conditions.tex`, `table_docmeans.tex` | Older stand-alone LaTeX fragments in the project root. Not used by `paper.Rmd`. |
+
+**Building.** Open `TextEval.Rproj`, so that the working directory is the project root, and knit `paper.Rmd` (xelatex, via `template.tex`). All data folders (`results_main/`, `results_practice_v2/`, `results_study2/`, `results_study2_main/`) must be present. The glyph figure needs a Cairo-capable R graphics device and a UTF-8 locale. A LaTeX distribution with the packages loaded by `popovstyle.sty` (`tgpagella`, `natbib`, `booktabs`, `longtable`, `tikz`, `cleveref`, `subcaption`, `multirow`, among others) is required; TinyTeX installs missing ones on demand.
 
 ---
 
@@ -187,4 +216,4 @@ Run the analysis from the project root. It needs `clubSandwich` for robustness c
 - The four Study 1 source documents are not distributed and are not licensed here.
 - **Study 2 texts** are model outputs. They are not published by default. Before publishing them, read [`DATA_USE.md`](DATA_USE.md), which summarises the terms of each provider and the labelling conditions.
 
-Citation: Popov, S. V. (2026). *Same Text, Different Filename: Are LLMs Biased?* Preregistration AsPredicted #320377. Add the preprint or DOI here once available.
+Citation: Popov, S. V. (2026). *Same Text, Different Filename: Are LLMs Biased?* Preregistrations AsPredicted #320377 (Study 1) and #321045 (Study 2). Add the preprint or DOI here once available.

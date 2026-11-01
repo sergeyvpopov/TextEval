@@ -575,31 +575,155 @@ ci2 <- bootstrap_bias_share(v2, "brief_id")
 fmt_share <- function(point, lo, hi) {
   sprintf("%.1f\\%% [%.1f, %.1f]", 100 * point, 100 * lo, 100 * hi)
 }
+# Q3 preregistration (#321045): persistent share from BETWEEN-BRIEF
+# PRODUCTS, rather than the two-way decomposition of cell means.
+# The preregistration does not fix normalization. Here label effects are
+# centered across ALL eight labels (six in Study 1), so the sum-of-squares
+# is independent of the neutral reference chosen for seven contrasts.
+# For Study 2: average the three generator-specific label-effect vectors
+# within each brief, then cross-multiply vectors from DISTINCT briefs.
+# For Study 1: the analogous independent units are the four documents.
+# The denominator is the mean document-level squared label effect,
+# corrected for finite-repetition noise; the off-diagonal products in
+# the numerator are already free of independent call-level noise.
+q3_between_unit_share <- function(dat, unit_col, document_col = "doc_id") {
+  stopifnot(all(c("family", unit_col, document_col, "lab", "score") %in% names(dat)))
+  x <- dat[is.finite(dat$score) & !is.na(dat$lab), , drop = FALSE]
+  cells <- aggregate(
+    x$score,
+    by = list(family = as.character(x$family),
+              doc = as.character(x[[document_col]]),
+              unit = as.character(x[[unit_col]]),
+              lab = as.character(x$lab)),
+    FUN = function(z) c(avg = mean(z), sampling_var =
+                        if (length(z) > 1L) var(z) / length(z) else NA_real_))
+  cells$avg <- cells$x[, "avg"]
+  cells$sampling_var <- cells$x[, "sampling_var"]
+  pieces <- lapply(split(cells, cells$family), function(z) {
+    y <- xtabs(avg ~ doc + lab, data = z)
+    v <- xtabs(sampling_var ~ doc + lab, data = z)
+    if (nrow(z) != length(y) || any(!is.finite(v)))
+      stop("Q3 requires a complete document-by-label design and n >= 2 per cell")
+    mapping <- unique(z[, c("doc", "unit")])
+    if (anyDuplicated(mapping$doc)) stop("Each document must belong to one sampling unit")
+    units <- mapping$unit[match(rownames(y), mapping$doc)]
+    if (anyNA(units)) stop("Missing Q3 sampling-unit identifiers")
+    L <- ncol(y)
+    # Center labels within each document, removing overall writing quality.
+    centered <- sweep(y, 1L, rowMeans(y))
+    # Brief-level averages retain the three texts from the same brief together.
+    b <- rowsum(centered, group = units, reorder = TRUE)
+    n_per_unit <- as.vector(table(factor(units, levels = rownames(b))))
+    b <- sweep(b, 1L, n_per_unit, "/")
+    K <- nrow(b)
+    if (K < 2L) stop("Q3 between-unit products require at least two units")
+    # Mean off-diagonal dot product = unbiased estimate of squared
+    # persistent mean-label-effect vector, absent between-unit dependence.
+    off_diag <- (sum(colSums(b)^2) - sum(b^2)) / (K * (K - 1L) * L)
+    # Mean squared within-document label effects, net of scoring-call noise.
+    noise_per_doc <- (1 - 1 / L) * rowMeans(v)
+    total <- mean(rowMeans(centered^2) - noise_per_doc)
+    data.frame(family = as.character(z$family[1]),
+               share = if (total > 0) off_diag / total else NA_real_,
+               persistent_between_unit = off_diag,
+               total_noise_corrected = total)
+  })
+  do.call(rbind, pieces)
+}
+q3_1 <- q3_between_unit_share(s, unit_col = "doc_id")
+q3_2 <- q3_between_unit_share(v2, unit_col = "brief_id")
+# Percentile cluster bootstrap for the SAME between-unit-product Q3 statistic.
+# Precompute document-level contributions; resampling entire units avoids
+# treating the three texts generated from one Study 2 brief as independent.
+bootstrap_q3_share <- function(dat, unit_col, document_col = "doc_id",
+                               B = 2000L, seed = 20261101L) {
+  stopifnot(all(c("family", unit_col, document_col, "lab", "score") %in% names(dat)))
+  x <- dat[is.finite(dat$score) & !is.na(dat$lab), , drop = FALSE]
+  cells <- aggregate(x$score,
+    by = list(family = as.character(x$family),
+              doc = as.character(x[[document_col]]),
+              unit = as.character(x[[unit_col]]),
+              lab = as.character(x$lab)),
+    FUN = function(z) c(avg = mean(z), sampling_var =
+                        if (length(z) > 1L) var(z) / length(z) else NA_real_))
+  cells$avg <- cells$x[, "avg"]
+  cells$sampling_var <- cells$x[, "sampling_var"]
+  set.seed(seed)
+  out <- lapply(split(cells, cells$family), function(z) {
+    y <- xtabs(avg ~ doc + lab, data = z)
+    v <- xtabs(sampling_var ~ doc + lab, data = z)
+    if (nrow(z) != length(y) || any(!is.finite(v)))
+      stop("Q3 bootstrap requires complete label cells and n >= 2")
+    map <- unique(z[, c("doc", "unit")])
+    if (anyDuplicated(map$doc)) stop("Document is mapped to multiple units")
+    units <- map$unit[match(rownames(y), map$doc)]
+    if (anyNA(units)) stop("Missing sampling units")
+    L <- ncol(y)
+    centered <- sweep(y, 1L, rowMeans(y))
+    # Document-specific denominator contributions (including noise correction).
+    total_doc <- rowMeans(centered^2) - (1 - 1 / L) * rowMeans(v)
+    unit_ids <- unique(units)
+    K <- length(unit_ids)
+    if (K < 2L) stop("Need at least two independent Q3 units")
+    groups <- factor(units, levels = unit_ids)
+    b <- rowsum(centered, group = groups, reorder = FALSE)
+    counts <- as.vector(tabulate(as.integer(groups), nbins = K))
+    b <- sweep(b, 1L, counts, "/")
+    denom_sums <- as.vector(rowsum(total_doc, group = groups, reorder = FALSE))
+    draws <- replicate(B, {
+      pick <- sample.int(K, K, replace = TRUE)
+      sampled <- b[pick, , drop = FALSE]
+      off_diag <- (sum(colSums(sampled)^2) - sum(sampled^2)) /
+        (K * (K - 1L) * L)
+      total <- sum(denom_sums[pick]) / sum(counts[pick])
+      if (total > 0) off_diag / total else NA_real_
+    })
+    valid <- draws[is.finite(draws)]
+    if (length(valid) < 0.95 * B)
+      stop("Too many undefined Q3 bootstrap estimates")
+    ci <- unname(quantile(valid, c(0.025, 0.975)))
+    data.frame(family = as.character(z$family[1]), lo = ci[1], hi = ci[2])
+  })
+  do.call(rbind, out)
+}
+q3_ci1 <- bootstrap_q3_share(s, unit_col = "doc_id")
+q3_ci2 <- bootstrap_q3_share(v2, unit_col = "brief_id")
+# Display clean model names without the provider/family key or row names.
 variance_comp <- data.frame(
   Judge = unname(judge_name[fams2]),
-  `Human texts` = vapply(fams2, function(f) {
+  `\\shortstack{Human texts\\\\(corrected)}` = unname(vapply(fams2, function(f) {
     a <- shares1[shares1$family == f, ]; b <- ci1[ci1$family == f, ]
     fmt_share(a$persistent_share, b$lo, b$hi)
-  }, character(1)),
-  `LLM-written` = vapply(fams2, function(f) {
+  }, character(1))),
+  `\\shortstack{LLM-written\\\\(corrected)}` = unname(vapply(fams2, function(f) {
     a <- shares2[shares2$family == f, ]; b <- ci2[ci2$family == f, ]
     fmt_share(a$persistent_share, b$lo, b$hi)
-  }, character(1)),
-  check.names = FALSE
+  }, character(1))),
+  `\\shortstack{Human texts\\\\(Q3)}` = unname(vapply(fams2, function(f) {
+    a <- q3_1[q3_1$family == f, ]; b <- q3_ci1[q3_ci1$family == f, ]
+    fmt_share(a$share, b$lo, b$hi)
+  }, character(1))),
+  `\\shortstack{LLM-written\\\\(Q3)}` = unname(vapply(fams2, function(f) {
+    a <- q3_2[q3_2$family == f, ]; b <- q3_ci2[q3_ci2$family == f, ]
+    fmt_share(a$share, b$lo, b$hi)
+  }, character(1))),
+  row.names = NULL, check.names = FALSE
 )
-knitr::kable(variance_comp, format = "latex", escape = FALSE,
-             align = c("l", "c", "c"), booktabs = TRUE,
-             caption = paste0("Persistent share of label-related variance (\\%), corrected for finite-repetition sampling noise, and ",
-               "95\\% cluster-bootstrap percentile intervals in brackets from ",
-               "2,000 resamples."),
-             label = "tab:perc_bias")
+knitr::kable(variance_comp, format = "latex", escape = FALSE, row.names = FALSE,
+             align = c("l", rep("c", 4)), booktabs = TRUE,
+             caption = paste0("Persistent share of label-related variance (percent). ",
+               "Corrected shares adjust for finite-repetition ",
+               "noise; 95\\% cluster-bootstrap percentile intervals in brackets ",
+               "(2,000 resamples). Q3 columns use between-unit products (documents for Study 1, briefs for Study 2) as preregistered."),
+             label = "tab:perc_bias") |>
+  kableExtra::kable_styling(latex_options = "HOLD_position")
 ```
 
 # Conclusion
 
-I find that filename labels introduce bias. The persistent bias is small but detectable: LLMs prefer people over LLMs as authors, and absence of informative label is often worse than both. However, besides the persistent bias, there is context-specific bias, whose impact is frequently stronger than the persistent part, and whose variability masks the significance of the bias. I detect it in LLM judges; it could be in human judges too, but it is harder to ask human judges the same question repeatedly. 
+I find that filename labels introduce bias. The persistent bias is small but detectable: LLMs prefer people over LLMs as authors, and absence of informative label is often worse than both. However, besides the persistent bias, there is context-specific bias, whose impact is frequently stronger than the persistent part, and whose variability masks the significance of the bias. I detect it in LLM judges; it could be in human judges too. 
 
-I made my code available for other researchers to use; my texts are available by request, so other LLM label biases, such as prominence or gender, can be studied in a systematic way. The biases I document might decrease with time as models become more sophisticated. To combat them, one could reduce the label effect to no-label bias by scrambling any metadata before the analysis. The invisible watermark, LLM verbiage ("load-bearing", "spine", em-dashes), and cadence are harder to get rid of, and they could be interacting with documents too. Some of the bias can be averaged out by using multiple LLMs multiple times and averaging the outcomes; such an approach is unlikely to work with human judges. Future research can help quantify the machinery behind the context-specific bias, which hopefully will inform ways of combating it.
+The biases I document might decrease with time as models become more sophisticated. To combat them, one could reduce the label effect to no-label bias by scrambling any metadata before the analysis. The invisible watermark, LLM verbiage ("load-bearing", "spine", em-dashes), and cadence are harder to get rid of, and they could be interacting with documents too. Some of the bias can be averaged out by using multiple LLMs multiple times and averaging the outcomes; such an approach is unlikely to work with human judges. Future research can help quantify the machinery behind the context-specific bias, which hopefully will inform ways of combating it.
 
 ```{r table-brief-key, results='asis'}
 # Brief descriptions are keyed by the actual brief identifiers in the data.

@@ -1,7 +1,7 @@
 ---
 title: "Same Text, Different Filename: Are LLM Judges Biased?"
 author: "Sergey V. Popov"
-thanks: "Cardiff University, popovs@cardiff.ac.uk. The usual disclaimer applies. Studies were preregistered at (1) <https://aspredicted.org/sq9mp2.pdf>, then updated at <https://aspredicted.org/qj59r2.pdf> and <https://aspredicted.org/vp8ez6.pdf> and (2) <https://aspredicted.org/82v8c4.pdf>. LLMs helped me with coding and preparing the pre-registrations."
+thanks: "Cardiff University, popovs@cardiff.ac.uk. The usual disclaimer applies. Studies were preregistered at (1) <https://aspredicted.org/sq9mp2.pdf>, then updated at <https://aspredicted.org/qj59r2.pdf> and <https://aspredicted.org/vp8ez6.pdf> and (2) <https://aspredicted.org/82v8c4.pdf>. LLMs helped me with coding and preparing the pre-registrations. The data, experimental materials, and replication code are available from the Cardiff University Research Data Repository at <https://doi.org/10.17035/cardiff.34885677>."
 abstract: |
   Yes. In 2026, leading economic journals started using Refine.ink in the technical quality assessment of submissions before publication. I study whether renaming a file changes the perception of the document's quality by LLM judges. I find that three frontier LLMs score the same document differently if you change the document's filename. A person-related label scores higher than no label; there is no consistent preference of own- or rival-based label, nor a penalty for an Asian name, but there is a context-specific bias in assessments whose direction and size vary with both document and label. With LLM-written documents, some self-premium can be detected, but a significant context-dependent label bias remains. Whether to combat it is a question of the costs of evaluation errors.
   
@@ -19,6 +19,7 @@ output:
     latex_engine: xelatex
     keep_tex: true
     number_sections: false
+knit: (function(input, ...) { source(file.path(dirname(normalizePath(input)), "compile_paper.R"), local = TRUE); compile_paper(input) })
 ---
 
 ```{r setup, include=FALSE}

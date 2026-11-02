@@ -11,6 +11,7 @@ Code, data and analysis for two experiments on whether large language models cha
 **Study 1 data collection:** 27 October 2026, via OpenRouter
 **Study 2 data collection:** 29–30 October 2026, via OpenRouter; analysed 31 October 2026
 **Status:** Both studies are collected and analysed with the registered scripts. The paper (`paper.Rmd`, `paper.pdf`) is a first draft. Study 2 collection: 25,920 valid calls, 12 complete repetitions per judge, USD 47.66 (estimate USD 51, cap USD 60).
+**Archived replication data and code:** https://doi.org/10.17035/cardiff.34885677
 
 ---
 
@@ -217,3 +218,5 @@ The analysis needs no API key and runs from the committed `results_study2_main/`
 - **Study 2 texts** are model outputs. They are not published by default. Before publishing them, read [`DATA_USE.md`](DATA_USE.md), which summarises the terms of each provider and the labelling conditions.
 
 Citation: Popov, S. V. (2026). *Same Text, Different Filename: Are LLMs Biased?* Preregistrations AsPredicted #320377 (Study 1) and #321045 (Study 2). Add the preprint or DOI here once available.
+
+paper.Rmd last compiled on 2026-11-02 18:22:52 GMT using R version 4.6.1, tinytex package version 0.61, and TeX Live version unavailable.

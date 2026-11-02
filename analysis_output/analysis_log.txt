@@ -1,4 +1,4 @@
-Analysis run: 2026-10-28 14:58:23 
+Analysis run: 2026-10-31 13:37:57 
 Input: results_main/calls.csv | delivery: text | score column: score 
 
 ================ COLLECTION ================
@@ -29,12 +29,18 @@ Observations per document x condition (valid only):
   Cournot        456    456     456    456    456  456
 
 Providers and model versions:
-       family             model_requested              model_returned               provider
-1      openai          openai/gpt-6.1-sol          openai/gpt-6.1-sol                 OpenAI
-28     google       google/gemini-4-argon       google/gemini-4-argon                 Google
-36     google       google/gemini-4-argon       google/gemini-4-argon       Google AI Studio
-44  anthropic anthropic/claude-sonnet-5.5 anthropic/claude-sonnet-5.5 Claude Platform on AWS
-243    openai          openai/gpt-6.1-sol          openai/gpt-6.1-sol                  Azure
+       family             model_requested              model_returned
+1      openai          openai/gpt-6.1-sol          openai/gpt-6.1-sol
+28     google       google/gemini-4-argon       google/gemini-4-argon
+36     google       google/gemini-4-argon       google/gemini-4-argon
+44  anthropic anthropic/claude-sonnet-5.5 anthropic/claude-sonnet-5.5
+243    openai          openai/gpt-6.1-sol          openai/gpt-6.1-sol
+                  provider
+1                   OpenAI
+28                  Google
+36        Google AI Studio
+44  Claude Platform on AWS
+243                  Azure
 
 Input tokens by document (should vary only a few tokens across conditions):
            Neutral Sergey ChatGPT Claude Gemini   Chen
@@ -115,22 +121,38 @@ H4    0.0578 0.0064   8.9936 0.0000  0.0452  0.0704
 H4b  -0.0008 0.0074  -0.1114 0.9113 -0.0153  0.0136
 
 --- Holm-adjusted across models, within hypothesis ---
- hypothesis     model estimate     se  ci_lo  ci_hi    p_raw   p_holm mde80 power_at_min powered
-         H1 anthropic    0.123 0.0122  0.099  0.147 7.38e-24 7.38e-24 0.039        1.000    TRUE
-         H1    google   -0.203 0.0105 -0.224 -0.183 2.39e-84 7.17e-84 0.034        1.000    TRUE
-         H1    openai   -0.092 0.0058 -0.104 -0.081 4.10e-57 8.21e-57 0.019        1.000    TRUE
-         H2 anthropic   -0.099 0.0198 -0.137 -0.060 6.10e-07 1.83e-06 0.064        0.996    TRUE
-         H2    google    0.046 0.0139  0.019  0.073 9.52e-04 9.52e-04 0.045        1.000    TRUE
-         H2    openai   -0.037 0.0085 -0.054 -0.020 1.47e-05 2.94e-05 0.028        1.000    TRUE
-         H3 anthropic    0.279 0.0154  0.249  0.309 5.68e-73 1.70e-72 0.050        1.000    TRUE
-         H3    google   -0.175 0.0144 -0.203 -0.147 2.67e-34 5.34e-34 0.046        1.000    TRUE
-         H3    openai   -0.021 0.0080 -0.037 -0.006 7.11e-03 7.11e-03 0.026        1.000    TRUE
-         H4 anthropic    0.073 0.0152  0.043  0.103 1.58e-06 3.17e-06 0.049        1.000    TRUE
-         H4    google   -0.010 0.0141 -0.037  0.018 4.92e-01 4.92e-01 0.046        1.000    TRUE
-         H4    openai    0.058 0.0064  0.045  0.070 2.39e-19 7.17e-19 0.021        1.000    TRUE
-        H4b anthropic   -0.050 0.0176 -0.085 -0.016 4.17e-03 8.34e-03 0.057        1.000    TRUE
-        H4b    google   -0.053 0.0160 -0.085 -0.022 9.09e-04 2.73e-03 0.052        1.000    TRUE
-        H4b    openai   -0.001 0.0074 -0.015  0.014 9.11e-01 9.11e-01 0.024        1.000    TRUE
+ hypothesis     model estimate         se  ci_lo  ci_hi    p_raw
+         H1 anthropic    0.123 0.01217990  0.099  0.147 7.38e-24
+         H1    google   -0.203 0.01045210 -0.224 -0.183 2.39e-84
+         H1    openai   -0.092 0.00580183 -0.104 -0.081 4.10e-57
+         H2 anthropic   -0.099 0.01975070 -0.137 -0.060 6.10e-07
+         H2    google    0.046 0.01393640  0.019  0.073 9.52e-04
+         H2    openai   -0.037 0.00852118 -0.054 -0.020 1.47e-05
+         H3 anthropic    0.279 0.01543860  0.249  0.309 5.68e-73
+         H3    google   -0.175 0.01435660 -0.203 -0.147 2.67e-34
+         H3    openai   -0.021 0.00797480 -0.037 -0.006 7.11e-03
+         H4 anthropic    0.073 0.01522970  0.043  0.103 1.58e-06
+         H4    google   -0.010 0.01412830 -0.037  0.018 4.92e-01
+         H4    openai    0.058 0.00642815  0.045  0.070 2.39e-19
+        H4b anthropic   -0.050 0.01756730 -0.085 -0.016 4.17e-03
+        H4b    google   -0.053 0.01601530 -0.085 -0.022 9.09e-04
+        H4b    openai   -0.001 0.00738267 -0.015  0.014 9.11e-01
+   p_holm mde80 power_at_min powered
+ 7.38e-24 0.039        1.000    TRUE
+ 7.17e-84 0.034        1.000    TRUE
+ 8.21e-57 0.019        1.000    TRUE
+ 1.83e-06 0.064        0.996    TRUE
+ 9.52e-04 0.045        1.000    TRUE
+ 2.94e-05 0.028        1.000    TRUE
+ 1.70e-72 0.050        1.000    TRUE
+ 5.34e-34 0.046        1.000    TRUE
+ 7.11e-03 0.026        1.000    TRUE
+ 3.17e-06 0.049        1.000    TRUE
+ 4.92e-01 0.046        1.000    TRUE
+ 7.17e-19 0.021        1.000    TRUE
+ 8.34e-03 0.057        1.000    TRUE
+ 2.73e-03 0.052        1.000    TRUE
+ 9.11e-01 0.024        1.000    TRUE
 
 mde80 = smallest true effect detectable with 80% power at alpha = 0.0167 (= 3.236 x SE); power_at_min = power to detect 0.10 points; powered = power_at_min >= 80%.
 
@@ -194,13 +216,21 @@ Per-document H1 (AI labels minus Sergey label), by model:
 
 Score frequencies by condition (pooled models):
          y
-          2.5 2.8 3.5 3.8   4 4.2 4.5 4.6 4.7 4.8   5 5.1 5.2 5.3 5.4 5.5 5.6 5.7 5.8 5.9   6 6.1 6.2 6.3 6.4 6.5 6.8
-  Neutral   0   0 272  19   5   0 107   1   0  26 144   1  19  13  56 158  91  36 222   1  97  10 325  60  58 100   3
-  Sergey    1   1 262   1   2   0  96   2   0  59  30   0   2   4  31 102  54  32 320   0 148  13 295 109  86 155  19
-  ChatGPT   0   0 232  34  11   1 178   0   2  26  20   6  97  24  78 136  57  24 365   0 134  22 244  47  27  59   0
-  Claude    0   0 182   8   4   0 268   1   2  34  28   5  56  18  75 219  75  18 213   0 103  10 343  69  46  47   0
-  Gemini    1   0 171   2   1   0 200   5   0  62  15   0  36  12  65 175  99  25 365   0 117  18 289  59  49  58   0
-  Chen      0   0 206   0  35   0 210   0   0   2   3   0   8  11  57 174  84  19 255   0 128  10 291 115  53 141  22
+          2.5 2.8 3.5 3.8   4 4.2 4.5 4.6 4.7 4.8   5 5.1 5.2 5.3 5.4
+  Neutral   0   0 272  19   5   0 107   1   0  26 144   1  19  13  56
+  Sergey    1   1 262   1   2   0  96   2   0  59  30   0   2   4  31
+  ChatGPT   0   0 232  34  11   1 178   0   2  26  20   6  97  24  78
+  Claude    0   0 182   8   4   0 268   1   2  34  28   5  56  18  75
+  Gemini    1   0 171   2   1   0 200   5   0  62  15   0  36  12  65
+  Chen      0   0 206   0  35   0 210   0   0   2   3   0   8  11  57
+         y
+          5.5 5.6 5.7 5.8 5.9   6 6.1 6.2 6.3 6.4 6.5 6.8
+  Neutral 158  91  36 222   1  97  10 325  60  58 100   3
+  Sergey  102  54  32 320   0 148  13 295 109  86 155  19
+  ChatGPT 136  57  24 365   0 134  22 244  47  27  59   0
+  Claude  219  75  18 213   0 103  10 343  69  46  47   0
+  Gemini  175  99  25 365   0 117  18 289  59  49  58   0
+  Chen    174  84  19 255   0 128  10 291 115  53 141  22
 
 Figures written to analysis_output 
 LaTeX tables: analysis_output/table_conditions.tex and analysis_output/table_hypotheses.tex 

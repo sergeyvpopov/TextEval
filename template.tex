@@ -1,0 +1,55 @@
+
+% Template for paper.Rmd
+% Uses popovstyle.sty, natbib and plainnat bibliography
+
+\documentclass[11pt]{article}
+
+\usepackage{popovstyle}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}
+  \setlength{\parskip}{0pt}
+}
+\providecommand{\pandocbounded}[1]{#1}
+
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+\title{$title$}
+\author{$for(author)$$author$$sep$ \and $endfor$$if(thanks)$\footnote{$thanks$}$endif$}
+\date{$if(date)$$date$$else$\today$endif$}
+
+\begin{document}
+
+\maketitle
+
+$if(abstract)$
+\begin{abstract}
+$abstract$
+\end{abstract}
+$endif$
+
+% Keywords
+$if(keywords)$
+\noindent\textbf{Keywords:}
+$for(keywords)$$keywords$$sep$; $endfor$
+
+\medskip
+$endif$
+
+% JEL classification
+$if(jel)$
+\noindent\textbf{JEL Classification:} $jel$
+
+\medskip
+$endif$
+
+$body$
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

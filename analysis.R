@@ -187,7 +187,7 @@ confirmatory <- function(d) {
     se <- vapply(tests, \(m) m[h, "se"], 0)
     za <- qnorm(1 - opt$alpha_mde / 2); zb <- qnorm(opt$power)
     data.frame(hypothesis = h, model = names(p), estimate = round(est, 3),
-               se = round(se, 4),
+               se = signif(se, 6),   # not rounded to 4 first: round(,4) then "%.3f" in the LaTeX table can round a half-way case the wrong way
                ci_lo = round(vapply(tests, \(m) m[h, "ci_lo"], 0), 3),
                ci_hi = round(vapply(tests, \(m) m[h, "ci_hi"], 0), 3),
                p_raw = signif(p, 3), p_holm = signif(p.adjust(p, "holm"), 3),

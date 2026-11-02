@@ -1,0 +1,37 @@
+event,brief_id,family,reason,timestamp
+freeze,B01CournotVsStackelberg,NA,NA,2026-10-29T11:27:24+0000
+freeze,B02Eignevalues,NA,NA,2026-10-29T11:30:18+0000
+freeze,B02InvisibleHand,NA,NA,2026-10-29T11:33:55+0000
+freeze,B04Money,NA,NA,2026-10-29T11:38:20+0000
+freeze,B05BehaviouralFinance,NA,NA,2026-10-29T11:40:06+0000
+freeze,B06WritingAPaper,NA,NA,2026-10-29T12:53:54+0000
+freeze,B07WritingaSOP,NA,NA,2026-10-29T12:55:19+0000
+freeze,B08Appeal,NA,NA,2026-10-29T13:00:38+0000
+freeze,B09Chess,NA,NA,2026-10-29T13:04:32+0000
+freeze,P01,NA,NA,2026-10-29T13:06:11+0000
+freeze,B10Mars,NA,NA,2026-10-29T13:54:17+0000
+freeze,B11LLMUse,NA,NA,2026-10-29T13:58:37+0000
+freeze,B12Biases,NA,NA,2026-10-29T14:02:49+0000
+freeze,B13ChessAd,NA,NA,2026-10-29T14:05:25+0000
+freeze,B14ChessAdOlder,NA,NA,2026-10-29T14:07:56+0000
+freeze,B15SourcesOfCreativity,NA,NA,2026-10-29T14:14:50+0000
+freeze,B16RealEstate,NA,NA,2026-10-29T14:23:09+0000
+freeze,B17Universities,NA,NA,2026-10-29T14:25:12+0000
+freeze,B17Travel,NA,NA,2026-10-29T14:28:40+0000
+freeze,B18Syllabus,NA,NA,2026-10-29T14:31:23+0000
+freeze,B19Sleep,NA,NA,2026-10-29T14:33:15+0000
+freeze,B20CookingPlan,NA,NA,2026-10-29T14:36:54+0000
+freeze,B21Brexit,NA,NA,2026-10-29T14:39:18+0000
+freeze,B22InflationUnemployment,NA,NA,2026-10-29T14:48:43+0000
+freeze,B23Carcassonne,NA,NA,2026-10-29T14:50:54+0000
+freeze,B24Bardic,NA,NA,2026-10-29T14:53:36+0000
+freeze,B25Lovecraft,NA,NA,2026-10-29T14:56:26+0000
+freeze,B26Coffee,NA,NA,2026-10-29T14:58:59+0000
+freeze,B27Painting,NA,NA,2026-10-29T15:02:05+0000
+freeze,B28Art,NA,NA,2026-10-29T15:03:45+0000
+freeze,B29Tales,NA,NA,2026-10-29T15:06:03+0000
+freeze,B30Fields,NA,NA,2026-10-29T15:08:04+0000
+exclude,B14ChessAdOlder,NA,chess topic repeated in B09Chess and B13ChessAd; dropped to keep 30 briefs,2026-10-29T15:12:27+0000
+recode,B12Biases,NA,results closer to academic than to general,2026-10-29T15:13:12+0000
+abandon,B06Teams,NA,abandoned before freeze; reason to confirm,2026-10-29T11:42:13+0000
+abandon,B06Writing,NA,abandoned before freeze; probably renamed B06WritingAPaper; to confirm,2026-10-29T12:50:03+0000
